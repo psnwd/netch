@@ -71,8 +71,9 @@ public abstract class Guard
 
         if (RedirectOutput)
         {
-            ReadOutputAsync(Instance.StandardOutput).Forget();
-            ReadOutputAsync(Instance.StandardError).Forget();
+            // completes when the process closed both pipes, i.e. it exited and everything it printed was handled
+            var readers = Task.WhenAll(ReadOutputAsync(Instance.StandardOutput), ReadOutputAsync(Instance.StandardError));
+            readers.Forget();
 
             if (!StartedKeywords.Any())
             {
@@ -94,6 +95,14 @@ public abstract class Guard
                         await StopGuardAsync();
                         OnStartFailed();
                         throw new MessageException($"{Name} 控制器启动失败");
+                }
+
+                // exited without printing a started or failed keyword: do not wait out the timeout
+                if (readers.IsCompleted)
+                {
+                    await StopGuardAsync();
+                    OnStartFailed();
+                    throw new MessageException($"{Name} 控制器启动失败");
                 }
             }
 

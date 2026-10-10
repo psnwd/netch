@@ -91,6 +91,15 @@ namespace Tests
             }
         }
 
+        [TestMethod]
+        public async Task Guard_ExitBeforeStartedKeyword_FailsFast()
+        {
+            var g = new FakeGuard(new[] { "READY" }, new string[0]);
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            await Assert.ThrowsExactlyAsync<MessageException>(() => g.Start("/c echo hello & exit 3"));
+            Assert.IsLessThan(10_000, sw.ElapsedMilliseconds); // used to wait the full 50 s timeout
+        }
+
         // ---- WebController: Windows system proxy ----
 
         private const string TestRoot = @"Software\NetchTest";

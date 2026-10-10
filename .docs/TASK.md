@@ -81,4 +81,4 @@ Phases map to [PLAN.md](PLAN.md). One task per commit/PR.
 ## Controller tests
 - [x] `Guard` (start keyword, failed keyword, stop kills child) via a copied cmd.exe; `WebController` start/stop/crash-recover against a scratch registry key; `V2rayConfigUtils` outbound protocol per server type, inbound, socks auth, vmess address/port
 - [ ] Not covered (need drivers/admin/real binaries): NFController, TUNController, PcapController, protocol controllers' real process start, MainController orchestration
-- [ ] Guard: a child that exits without a start/fail keyword only fails after a 50 s timeout (not tested for that reason; arguably a bug: could fail on process exit)
+- [x] Guard: a child that exits without a start/fail keyword now fails right away (was a 50 s wait); test added
