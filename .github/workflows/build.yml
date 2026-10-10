@@ -80,7 +80,14 @@ jobs:
       - name: Build
         shell: pwsh
         run: |
-          .\build.ps1 -Configuration Release -OutputPath release
+          .\build.ps1 -Configuration Release -OutputPath release 2>&1 | Tee-Object -FilePath build.log
+          $code = $LASTEXITCODE
+          if ($code -ne 0) {
+            # surface the tail as a public annotation (job logs need a login to read)
+            $tail = (Get-Content build.log -Tail 40) -join "%0A"
+            echo "::error title=build.ps1 exit $code::$tail"
+            exit $code
+          }
 
       - name: Test
         shell: pwsh
