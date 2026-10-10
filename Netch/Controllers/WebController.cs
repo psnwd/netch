@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.Win32;
 using Netch.Interfaces;
 using Netch.Models;
@@ -15,8 +16,12 @@ public class WebController : IModeController
 {
     private const string KeyPath = @"Software\Microsoft\Windows\CurrentVersion\Internet Settings";
 
-    // ponytail: restored on Stop/exit only; a hard crash leaves the proxy set (Settings > Network > Proxy to clear)
-    private (object? Enable, object? Server, object? Override)? _saved;
+    // previous values are also written to disk so a crash can be undone on the next launch (RecoverAfterCrash)
+    private static string SavedFile => Path.Combine(Global.NetchDir, "data", "webmode.restore.json");
+
+    private record Saved(int? Enable, string? Server, string? Override);
+
+    private Saved? _saved;
 
     public string Name => "System Proxy";
 
@@ -30,7 +35,8 @@ public class WebController : IModeController
         var address = $"{await server.AutoResolveHostnameAsync()}:{server.Port}";
 
         using var key = Registry.CurrentUser.OpenSubKey(KeyPath, true) ?? throw new MessageException("Open Internet Settings failed");
-        _saved = (key.GetValue("ProxyEnable"), key.GetValue("ProxyServer"), key.GetValue("ProxyOverride"));
+        _saved = new Saved(key.GetValue("ProxyEnable") as int?, key.GetValue("ProxyServer") as string, key.GetValue("ProxyOverride") as string);
+        File.WriteAllText(SavedFile, JsonSerializer.Serialize(_saved));
 
         key.SetValue("ProxyServer", $"socks={address}");
         key.SetValue("ProxyOverride", webMode.Bypass);
@@ -40,22 +46,43 @@ public class WebController : IModeController
 
     public Task StopAsync()
     {
-        if (_saved is not var (enable, server, over))
-            return Task.CompletedTask;
+        if (_saved != null)
+            Restore(_saved);
 
         _saved = null;
-        using var key = Registry.CurrentUser.OpenSubKey(KeyPath, true);
-        if (key == null)
-            return Task.CompletedTask;
-
-        Restore(key, "ProxyEnable", enable, RegistryValueKind.DWord);
-        Restore(key, "ProxyServer", server, RegistryValueKind.String);
-        Restore(key, "ProxyOverride", over, RegistryValueKind.String);
-        Notify();
         return Task.CompletedTask;
     }
 
-    private static void Restore(RegistryKey key, string name, object? value, RegistryValueKind kind)
+    /// <summary>
+    ///     Call at startup: if a previous run died with the proxy set, put the old values back
+    /// </summary>
+    public static void RecoverAfterCrash()
+    {
+        try
+        {
+            if (File.Exists(SavedFile))
+                Restore(JsonSerializer.Deserialize<Saved>(File.ReadAllText(SavedFile))!);
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "Recover system proxy failed");
+        }
+    }
+
+    private static void Restore(Saved saved)
+    {
+        using var key = Registry.CurrentUser.OpenSubKey(KeyPath, true);
+        if (key == null)
+            return;
+
+        Set(key, "ProxyEnable", saved.Enable, RegistryValueKind.DWord);
+        Set(key, "ProxyServer", saved.Server, RegistryValueKind.String);
+        Set(key, "ProxyOverride", saved.Override, RegistryValueKind.String);
+        Notify();
+        File.Delete(SavedFile);
+    }
+
+    private static void Set(RegistryKey key, string name, object? value, RegistryValueKind kind)
     {
         if (value == null)
             key.DeleteValue(name, false);

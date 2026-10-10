@@ -73,6 +73,9 @@ public static class Program
             return;
         }
 
+        // only the first instance may do this, or it would undo a running WebMode
+        WebController.RecoverAfterCrash();
+
         // clean up old logs
         if (Directory.Exists("logging"))
         {

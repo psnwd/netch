@@ -68,5 +68,5 @@ Phases map to [PLAN.md](PLAN.md). One task per commit/PR.
 ## WebMode
 - [x] `ModeType.WebMode` (appended, value 3), `WebMode` model (`Bypass`), `WebController` (HKCU Internet Settings + InternetSetOption), sample `Storage/mode/System Proxy.json`, tests (JSON round-trip, sample loads)
 - [ ] Manual QA: start/stop sets and restores ProxyEnable/ProxyServer/ProxyOverride; browser traffic goes via proxy; behaviour with a SOCKS5-with-auth server (goes through local v2ray)
-- [ ] Known gap: hard crash leaves system proxy set; consider restoring on next start
+- [x] Crash recovery: previous proxy values saved to datawebmode.restore.json, restored by `WebController.RecoverAfterCrash()` after the single-instance check. Untested (needs a real crash + relaunch)
 - [ ] No editor UI: edit the JSON file (MainForm opens it)
