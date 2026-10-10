@@ -80,13 +80,20 @@ jobs:
       - name: Build
         shell: pwsh
         run: |
-          .\build.ps1 -Configuration Release -OutputPath release 2>&1 | Tee-Object -FilePath build.log
-          $code = $LASTEXITCODE
+          # job logs need a login to read; surface failures as public annotations
+          try {
+            .\build.ps1 -Configuration Release -OutputPath release 2>&1 | Tee-Object -FilePath build.log
+            $code = $LASTEXITCODE
+            $msg = "build.ps1 exit code $code"
+          } catch {
+            $code = 1
+            $msg = ($_ | Out-String) + $_.ScriptStackTrace
+          }
           if ($code -ne 0) {
-            # surface the tail as a public annotation (job logs need a login to read)
-            $tail = (Get-Content build.log -Tail 40) -join "%0A"
-            echo "::error title=build.ps1 exit $code::$tail"
-            exit $code
+            $tail = if (Test-Path build.log) { (Get-Content build.log -Tail 30) -join "`n" } else { "" }
+            $text = ($msg + "`n---`n" + $tail) -replace "%","%25" -replace "`r","" -replace "`n","%0A"
+            echo "::error title=build failed::$text"
+            exit 1
           }
 
       - name: Test
