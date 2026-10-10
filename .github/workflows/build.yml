@@ -81,8 +81,9 @@ jobs:
         shell: pwsh
         run: |
           # job logs need a login to read; surface failures as public annotations
+          $log = Join-Path $env:GITHUB_WORKSPACE "build.log"  # build scripts change the working directory
           try {
-            .\build.ps1 -Configuration Release -OutputPath release 2>&1 | Tee-Object -FilePath build.log
+            .\build.ps1 -Configuration Release -OutputPath release *>&1 | Tee-Object -FilePath $log
             $code = $LASTEXITCODE
             $msg = "build.ps1 exit code $code"
           } catch {
@@ -90,7 +91,7 @@ jobs:
             $msg = ($_ | Out-String) + $_.ScriptStackTrace
           }
           if ($code -ne 0) {
-            $tail = if (Test-Path build.log) { (Get-Content build.log -Tail 30) -join "`n" } else { "" }
+            $tail = if (Test-Path $log) { (Get-Content $log -Tail 30) -join "`n" } else { "" }
             $text = ($msg + "`n---`n" + $tail) -replace "%","%25" -replace "`r","" -replace "`n","%0A"
             echo "::error title=build failed::$text"
             exit 1
