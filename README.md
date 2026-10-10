@@ -19,7 +19,7 @@ Some features may not be implemented in version 1
 - `ProcessMode` - Use Netfilter driver to intercept process traffic
 - `ShareMode` - Share your network based on WinPcap / Npcap
 - `TunMode` - Use WinTUN driver to create virtual adapter
-- `WebMode` - Web proxy mode
+- `WebMode` - Set the Windows system proxy (SOCKS5); only apps that honour it are proxied. Restored on stop
 
 ### Protocols
 - [`Socks5`](https://www.wikiwand.com/en/SOCKS)

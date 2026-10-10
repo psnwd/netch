@@ -9,6 +9,7 @@ using Netch.Models.Modes;
 using Netch.Models.Modes.ProcessMode;
 using Netch.Models.Modes.ShareMode;
 using Netch.Models.Modes.TunMode;
+using Netch.Models.Modes.WebMode;
 using Netch.Utils;
 
 namespace Tests
@@ -52,6 +53,21 @@ namespace Tests
 
         [TestMethod]
         public void ShareMode_RoundTrip() => Assert.AreEqual("--preset x", RoundTrip(new ShareMode { Argument = "--preset x" }).Argument);
+
+        [TestMethod]
+        public void WebMode_RoundTrip() => Assert.AreEqual("<local>;10.*", RoundTrip(new WebMode { Bypass = "<local>;10.*" }).Bypass);
+
+        [TestMethod]
+        public void SampleWebModeFile_Loads()
+        {
+            var dir = new DirectoryInfo(System.AppContext.BaseDirectory);
+            while (!File.Exists(Path.Combine(dir.FullName, "Storage", "mode", "System Proxy.json")))
+                dir = dir.Parent!;
+
+            var m = (WebMode)ModeHelper.LoadMode(Path.Combine(dir.FullName, "Storage", "mode", "System Proxy.json"));
+            Assert.AreEqual("<local>", m.Bypass);
+            Assert.IsTrue(m.Remark.ContainsKey("en"));
+        }
 
         [TestMethod]
         public void Setting_EmptyJson_UsesDefaults()

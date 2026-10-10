@@ -64,3 +64,9 @@ Phases map to [PLAN.md](PLAN.md). One task per commit/PR.
 - [ ] `release.yml` carries the same Go 1.18 / .NET 10 changes but only runs on tag push; untested
 - [ ] Compare artifact layout with a build of `main` (QA automated check)
 - [ ] Failure diagnostics: build.yml wraps build.ps1 and emits an error annotation with the output tail (job logs need login); keep or drop
+
+## WebMode
+- [x] `ModeType.WebMode` (appended, value 3), `WebMode` model (`Bypass`), `WebController` (HKCU Internet Settings + InternetSetOption), sample `Storage/mode/System Proxy.json`, tests (JSON round-trip, sample loads)
+- [ ] Manual QA: start/stop sets and restores ProxyEnable/ProxyServer/ProxyOverride; browser traffic goes via proxy; behaviour with a SOCKS5-with-auth server (goes through local v2ray)
+- [ ] Known gap: hard crash leaves system proxy set; consider restoring on next start
+- [ ] No editor UI: edit the JSON file (MainForm opens it)

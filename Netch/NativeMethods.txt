@@ -24,5 +24,10 @@ GetConsoleWindow
 ntohs
 inet_pton
 
+// WinINet.dll
+InternetSetOption
+INTERNET_OPTION_SETTINGS_CHANGED
+INTERNET_OPTION_REFRESH
+
 // Windows.h
 // WIN32_ERROR

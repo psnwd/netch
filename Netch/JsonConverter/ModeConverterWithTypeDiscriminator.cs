@@ -4,6 +4,7 @@ using Netch.Models.Modes;
 using Netch.Models.Modes.ProcessMode;
 using Netch.Models.Modes.ShareMode;
 using Netch.Models.Modes.TunMode;
+using Netch.Models.Modes.WebMode;
 
 namespace Netch.JsonConverter;
 
@@ -29,6 +30,7 @@ public class ModeConverterWithTypeDiscriminator : JsonConverter<Mode>
             ModeType.ProcessMode => typeof(Redirector),
             ModeType.TunMode => typeof(TunMode),
             ModeType.ShareMode => typeof(ShareMode),
+            ModeType.WebMode => typeof(WebMode),
             _ => throw new ArgumentOutOfRangeException()
         };
 

@@ -108,6 +108,8 @@ public class ModeService
                 return new TUNController();
             case ModeType.ShareMode:
                 return new PcapController();
+            case ModeType.WebMode:
+                return new WebController();
             default:
                 Log.Error("Unknown Mode Type \"{Type}\"", (int)type);
                 throw new MessageException("Unknown Mode Type");

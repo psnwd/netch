@@ -1,0 +1,8 @@
+{
+  "type": "WebMode",
+  "remark": {
+    "en": "[Web Proxy] System proxy (apps that honour it)",
+    "zh-CN": "[系统代理] 系统代理（仅支持代理设置的程序）"
+  },
+  "bypass": "<local>"
+}
