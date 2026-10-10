@@ -4,5 +4,5 @@ public class ShareMode : Mode
 {
     public override ModeType Type => ModeType.ShareMode;
 
-    public string Argument = "--preset uu";
+    public string Argument { get; set; } = "--preset uu";
 }

@@ -67,7 +67,7 @@ public static class ShareLink
 
         if (text.StartsWith("tg://socks?") || text.StartsWith("https://t.me/socks?"))
         {
-            list.AddRange(ServerHelper.GetUtilByTypeName("Socks5").ParseUri(text));
+            list.AddRange(ServerHelper.GetUtilByTypeName("SOCKS").ParseUri(text));
         }
         else if (text.StartsWith("Netch://"))
         {
