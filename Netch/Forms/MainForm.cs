@@ -98,7 +98,7 @@ public partial class MainForm : Form
         if (Global.Settings.StartWhenOpened)
             ControlButton.PerformClick();
 
-        Program.SingleInstance.StartListenServer();
+        Program.SingleInstance.StartListening(Program.SingleInstance_MessageReceived);
     }
 
     private void RecordSize()

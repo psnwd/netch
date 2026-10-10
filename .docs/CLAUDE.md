@@ -39,5 +39,4 @@ dotnet test Tests\Tests.csproj
 - Adding a protocol: new `Servers/<Name>/` with Server/Util/Form(/Controller). `ServerHelper` finds every public `IServerUtil` by reflection and the JSON converter resolves server types through it, so no registration is needed. Add a round-trip test in `Tests/ShareLinkTests.cs`.
 - Translations: `Storage/i18n/` and `Netch/Resources/zh-CN`; strings go through `i18N.Translate`.
 - Dependabot PRs dominate git history; keep commits small.
-- Held-back package (API break, see `.docs/TASK.md`): HMBSbige.SingleInstance stays `6.0.0` (7.x API incompatible).
 - Modernization plan/status: `.docs/PLAN.md`, `.docs/TASK.md`, `.docs/QA.md`.

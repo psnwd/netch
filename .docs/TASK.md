@@ -24,7 +24,7 @@ Phases map to [PLAN.md](PLAN.md). One task per commit/PR.
 - [x] Fody + ConfigureAwait.Fody
 - [x] Serilog (+ Extensions.Hosting, Sinks.*)
 - [x] CsWin32 beta to stable (0.3.360): HWND ctor, ADDRESS_FAMILY/WIN32_ERROR in RouteHelper.cs, PortHelper.cs rewritten with byte[] + fixed (also fixes unfreed AllocHGlobal). PortHelper covered by test; RouteHelper.CreateUnicastIPCS and console show/hide need manual QA (TUN mode)
-- [x] MaxMind.GeoIP2, TaskScheduler, WindowsJobAPI, Stun.Net 10.0.10 bumped (ProxyFactory.CreateProxy replaced by `new Socks5UdpProxy(...)`; NAT test needs manual QA with a real SOCKS5 server). Held back: HMBSbige.SingleInstance 7.x (API is int-message only, no string `Received` stream; would need a Program.cs rewrite for no benefit, stay on 6.0.0). WindowsFirewallHelper: already latest
+- [x] MaxMind.GeoIP2, TaskScheduler, WindowsJobAPI, Stun.Net 10.0.10 (ProxyFactory.CreateProxy replaced by `new Socks5UdpProxy(...)`; NAT test needs manual QA with a real SOCKS5 server), HMBSbige.SingleInstance 7.0.0 (int command instead of string; handler marshals to UI thread via BeginInvoke; identifier is now plain `Netch`, no `Global\` prefix so single-instance is per session; QA: second launch must focus the first window). WindowsFirewallHelper: already latest
 - [x] System.* 7.0 to match TFM (Management, ServiceController; CodePages removed, in-box)
 - [x] Microsoft.Diagnostics.Tracing.TraceEvent, VisualStudio.Threading
 - [ ] Dependabot: add grouping to cut PR noise

@@ -18,7 +18,6 @@ public static class Constants
 
     public static class Parameter
     {
-        public const string Show = "-show";
         public const string ForceUpdate = "-forceUpdate";
     }
 

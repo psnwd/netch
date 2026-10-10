@@ -45,7 +45,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="HMBSbige.SingleInstance" Version="6.0.0" />
+    <PackageReference Include="HMBSbige.SingleInstance" Version="7.0.0" />
     <PackageReference Include="MaxMind.GeoIP2" Version="6.1.0" />
     <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="3.2.8" GeneratePathProperty="true" />
     <PackageReference Include="Microsoft.VisualStudio.Threading" Version="18.7.23" />

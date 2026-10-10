@@ -19,7 +19,10 @@ namespace Netch;
 
 public static class Program
 {
-    public static readonly ISingleInstanceService SingleInstance = new SingleInstanceService($"Global\\{nameof(Netch)}");
+    // v7 names both the mutex and the named pipe with this, so no "Global\" prefix: one instance per Windows session
+    public static readonly SingleInstanceService SingleInstance = new(nameof(Netch));
+
+    private const int ShowCommand = 1;
 
     internal static HWND ConsoleHwnd { get; private set; }
 
@@ -63,14 +66,12 @@ public static class Program
         Configuration.LoadAsync().Wait();
 
         // check if the program is already running
-        if (!SingleInstance.TryStartSingleInstance())
+        if (!SingleInstance.IsFirstInstance)
         {
-            SingleInstance.SendMessageToFirstInstanceAsync(Constants.Parameter.Show).GetAwaiter().GetResult();
+            SingleInstance.SendMessageAsync(ShowCommand).GetAwaiter().GetResult();
             Environment.Exit(0);
             return;
         }
-
-        SingleInstance.Received.Subscribe(SingleInstance_ArgumentsReceived);
 
         // clean up old logs
         if (Directory.Exists("logging"))
@@ -200,14 +201,10 @@ public static class Program
         Log.CloseAndFlush();
     }
 
-    private static void SingleInstance_ArgumentsReceived((string, Action<string>) receive)
+    // called on the pipe thread and must complete synchronously: hand the work to the UI thread
+    internal static void SingleInstance_MessageReceived(int command)
     {
-        var (arg, endFunc) = receive;
-        if (arg == Constants.Parameter.Show)
-        {
-            Utils.Utils.ActivateVisibleWindows();
-        }
-
-        endFunc(string.Empty);
+        if (command == ShowCommand)
+            Global.MainForm.BeginInvoke(Utils.Utils.ActivateVisibleWindows);
     }
 }
