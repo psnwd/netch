@@ -14,7 +14,8 @@ namespace Netch.Controllers;
 /// </summary>
 public class WebController : IModeController
 {
-    private const string KeyPath = @"Software\Microsoft\Windows\CurrentVersion\Internet Settings";
+    // not const: tests point it at a scratch key instead of the real Internet Settings
+    internal static string KeyPath =@"Software\Microsoft\Windows\CurrentVersion\Internet Settings";
 
     // previous values are also written to disk so a crash can be undone on the next launch (RecoverAfterCrash)
     private static string SavedFile => Path.Combine(Global.NetchDir, "data", "webmode.restore.json");
