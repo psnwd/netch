@@ -30,12 +30,12 @@ Phases map to [PLAN.md](PLAN.md). One task per commit/PR.
 - [ ] Dependabot: add grouping to cut PR noise
 
 ## P4 Native + binaries
-- [ ] Redirector/RouteHelper: retarget platform toolset, rebuild, run RedirectorTester
-- [ ] `Other/aiodns`: bump Go version in `go.mod`, update modules, rebuild
-- [ ] `Other/pcap2socks`, `v2ray-sn`, `wintun`: bump pinned versions
-- [ ] `Storage/tun2socks.bin`, `nfdriver.sys`: refresh or document source/signature
-- [ ] `Storage/README.md`: version + sha256 table
-- [ ] `build.ps1`: pin GeoIP download (hash/version), fail on download error
+- [ ] Redirector/RouteHelper: rebuild + run RedirectorTester. BLOCKED locally (no msbuild); vcxproj already v143. Verify via CI
+- [x] `Other/aiodns`: go 1.25.0, miekg/dns 1.1.73; c-shared build verified locally. Runtime check in QA (DNS section)
+- [ ] `Other/pcap2socks` v0.6.2, `wintun` 0.13, `v2ray-sn` v5.0.16: URLs still resolve (HTTP 200). Version bumps not done (need Windows runtime testing); v2ray-sn build is the suspected CI failure
+- [x] `Storage/tun2socks.bin`, `nfdriver.sys`: documented. tun2socks.bin is a Netch-specific c-shared build (go1.17.1), not an upstream exe; patch source not in repo, cannot refresh. nfdriver.sys 1.6.3.0 tied to Redirector
+- [x] `Storage/README.md`: version + sha256 table
+- [x] `build.ps1`: GeoIP download fails the build on error (`-ErrorAction Stop`). Not hash-pinned: Loyalsoldier `release` branch is rolling
 
 ## P5 CI/CD
 - [x] checkout@v4, cache@v4, setup-go@v5, setup-msbuild@v2, upload-artifact@v4, action-gh-release@v2, stale@v9, setup-dotnet@v4 (also added to release.yml)
