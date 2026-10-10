@@ -1,0 +1,3 @@
+// Ghidra 12.1.4 decompile of rixcloud.moe/aiocloud/tun2socks/proxies.(*tcpHandler).Handle @ 2394ef700 (Storage/tun2socks.bin)
+// RAW OUTPUT, NOT SOURCE. Pseudo-C of Go code.
+{'program': 'tun2socks.dll', 'name': 'rixcloud.moe/aiocloud/tun2socks/proxies.(*tcpHandler).Handle', 'size': 709, 'address': '2394ef700', 'decompile_failed': True, 'decompile_error': 'Low-level Error: Joined varnode does not match size of record', 'revision': {'token': '0:7d0e198c:2531234', 'epoch': '7d0e198c', 'modification_number': 2531234, 'saved_time': 0, 'unsaved_changes': True, 'decompiled': False}}
