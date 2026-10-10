@@ -63,6 +63,7 @@ Phases map to [PLAN.md](PLAN.md). One task per commit/PR.
 - [x] `Netch Build CI` green on `modernize-net10` (commit 2e945ec): build 188 s, tests pass, `release` artifact 97.2 MB
 - [ ] `release.yml` carries the same Go 1.18 / .NET 10 changes but only runs on tag push; untested
 - [ ] Compare artifact layout with a build of `main` (QA automated check)
+- [x] WebRequest replaced by HttpClient (WebUtil; tests use a local HttpListener). Behaviour kept: non-2xx throws, timeout, UA, per-call proxy for subscriptions. Download body has no per-read timeout (WebRequest had ReadWriteTimeout)
 - [ ] Failure diagnostics: build.yml wraps build.ps1 and emits an error annotation with the output tail (job logs need login); keep or drop
 
 ## WebMode

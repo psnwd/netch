@@ -57,7 +57,7 @@ public static class UpdateChecker
         }
         catch (Exception e)
         {
-            if (e is WebException)
+            if (e is HttpRequestException or TaskCanceledException)
                 Log.Warning(e, "Get releases failed");
             else
                 Log.Error(e, "Get releases error");
