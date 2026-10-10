@@ -30,9 +30,9 @@ Phases map to [PLAN.md](PLAN.md). One task per commit/PR.
 - [ ] Dependabot: add grouping to cut PR noise
 
 ## P4 Native + binaries
-- [ ] Redirector/RouteHelper: rebuild + run RedirectorTester. BLOCKED locally (no msbuild); vcxproj already v143. Verify via CI
+- [x] Redirector/RouteHelper rebuild: builds in CI (run 38080196958, windows-2022). RedirectorTester not run (needs driver + admin)
 - [x] `Other/aiodns`: go 1.25.0, miekg/dns 1.1.73; c-shared build verified locally. Runtime check in QA (DNS section)
-- [ ] `Other/pcap2socks` v0.6.2, `wintun` 0.13, `v2ray-sn` v5.0.16: URLs still resolve (HTTP 200). Version bumps not done (need Windows runtime testing); v2ray-sn build is the suspected CI failure
+- [x] `Other/*` build in CI. `Other/pcap2socks` v0.6.2, `wintun` 0.13, `v2ray-sn` v5.0.16: URLs still resolve (HTTP 200). Version bumps not done (need Windows runtime testing). v2ray-sn needed Go 1.18 (SagerNet gVisor fork) and clash pinned to v1.11.0 (newest clash needs Go 1.20); both fixed in CI
 - [x] `Storage/tun2socks.bin`, `nfdriver.sys`: documented. tun2socks.bin is a Netch-specific c-shared build (go1.17.1), not an upstream exe; patch source not in repo, cannot refresh. nfdriver.sys 1.6.3.0 tied to Redirector
 - [x] `Storage/README.md`: version + sha256 table
 - [x] `build.ps1`: GeoIP download fails the build on error (`-ErrorAction Stop`). Not hash-pinned: Loyalsoldier `release` branch is rolling
@@ -58,3 +58,9 @@ Phases map to [PLAN.md](PLAN.md). One task per commit/PR.
 - [x] `ShareMode.Argument` was a field, dropped by JSON; now a property
 - [x] WireGuard share link: was cast to `VMessServer` (throw) and parse threw too; now `wireguard://privkey@host:port?publickey=..&address=..&mtu=..[&presharedkey=..]#remark`
 - [ ] CI uses `windows-2022` runner; confirm `setup-dotnet` 10 works there
+
+## CI status
+- [x] `Netch Build CI` green on `modernize-net10` (commit 2e945ec): build 188 s, tests pass, `release` artifact 97.2 MB
+- [ ] `release.yml` carries the same Go 1.18 / .NET 10 changes but only runs on tag push; untested
+- [ ] Compare artifact layout with a build of `main` (QA automated check)
+- [ ] Failure diagnostics: build.yml wraps build.ps1 and emits an error annotation with the output tail (job logs need login); keep or drop
