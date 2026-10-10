@@ -71,3 +71,9 @@ Phases map to [PLAN.md](PLAN.md). One task per commit/PR.
 - [ ] Manual QA: start/stop sets and restores ProxyEnable/ProxyServer/ProxyOverride; browser traffic goes via proxy; behaviour with a SOCKS5-with-auth server (goes through local v2ray)
 - [x] Crash recovery: previous proxy values saved to datawebmode.restore.json, restored by `WebController.RecoverAfterCrash()` after the single-instance check. Untested (needs a real crash + relaunch)
 - [ ] No editor UI: edit the JSON file (MainForm opens it)
+
+## Update path
+- [x] Rollback: a failed apply restores every `*.old` file (was: half-installed app). Test fails without it
+- [x] Pick the asset whose name matches the hash table (was `assets[0]`); case-insensitive hash compare; delete a download with a wrong hash
+- [ ] Not done: hash and file both come from the same GitHub release, so a compromised release defeats the check. Needs a signature (e.g. minisign/Authenticode) to fix
+- [ ] Not done: update runs inside the running process, no helper exe; real update still needs manual QA on Windows

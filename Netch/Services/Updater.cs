@@ -46,10 +46,37 @@ public class Updater
         if (!File.Exists(updateMainProgramFilePath))
             throw new MessageException(i18N.Translate($"Update file main program not exist"));
 
-        MarkFilesOld();
+        try
+        {
+            MarkFilesOld();
 
-        // move {tempDirectory}\extract\Netch to install folder
-        MoveFilesOver(updateDirectory, InstallDirectory);
+            // move {tempDirectory}\extract\Netch to install folder
+            MoveFilesOver(updateDirectory, InstallDirectory);
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "Apply update failed, rolling back");
+            RollbackOld();
+            throw new MessageException(i18N.Translate("Update failed, the previous version was restored") + $"\n{e.Message}");
+        }
+    }
+
+    /// <summary>
+    ///     Put every "*.old" file back over whatever replaced it
+    /// </summary>
+    private void RollbackOld()
+    {
+        foreach (var old in Directory.GetFiles(InstallDirectory, "*.old", SearchOption.AllDirectories))
+            try
+            {
+                var original = old[..^".old".Length];
+                File.Delete(original);
+                File.Move(old, original);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "failed to restore \"{File}\"", old);
+            }
     }
 
     private void MarkFilesOld()
