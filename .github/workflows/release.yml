@@ -47,6 +47,19 @@ jobs:
         with:
           files: .\other\release\aiodns.bin
 
+      - name: Setup Go 1.18 (v2ray-sn)
+        uses: actions/setup-go@v5
+        if: steps.check_other.outputs.files_exists == 'false'
+        with:
+          go-version: '1.18.10'
+          cache: false
+
+      - name: Export Go 1.18 root
+        shell: pwsh
+        if: steps.check_other.outputs.files_exists == 'false'
+        run: |
+          echo "GO118=$(go env GOROOT)" | Out-File -Append -Encoding UTF8 -FilePath $Env:GITHUB_ENV
+
       - name: Setup Go
         uses: actions/setup-go@v5
         if: steps.check_other.outputs.files_exists == 'false'
