@@ -43,21 +43,27 @@ public static class PortHelper
                     uint err;
                     uint size = 0;
                     PInvoke.GetExtendedTcpTable(default, ref size, false, (uint)inet, TCP_TABLE_CLASS.TCP_TABLE_OWNER_PID_LISTENER, 0); // get size
-                    var tcpTable = (MIB_TCPTABLE_OWNER_PID*)Marshal.AllocHGlobal((int)size);
+                    var buffer = new byte[size];
 
-                    if ((err = PInvoke.GetExtendedTcpTable(tcpTable, ref size, false, (uint)inet, TCP_TABLE_CLASS.TCP_TABLE_OWNER_PID_LISTENER, 0)) !=
-                        0)
+                    if ((err = PInvoke.GetExtendedTcpTable(buffer, ref size, false, (uint)inet, TCP_TABLE_CLASS.TCP_TABLE_OWNER_PID_LISTENER, 0)) != 0)
                         throw new Win32Exception((int)err);
 
-                    for (var i = 0; i < tcpTable -> dwNumEntries; i++)
+                    fixed (byte* p = buffer)
                     {
-                        var row = tcpTable -> table.ReadOnlyItemRef(i);
+                        var tcpTable = (MIB_TCPTABLE_OWNER_PID*)p;
+                        // rows follow the dwNumEntries header field
+                        var rows = (MIB_TCPROW_OWNER_PID*)(p + sizeof(uint));
 
-                        if (row.dwOwningPid is 0 or 4)
-                            continue;
+                        for (var i = 0; i < tcpTable -> dwNumEntries; i++)
+                        {
+                            var row = rows[i];
 
-                        if (PInvoke.ntohs((ushort)row.dwLocalPort) == port)
-                            process.Add(Process.GetProcessById((int)row.dwOwningPid));
+                            if (row.dwOwningPid is 0 or 4)
+                                continue;
+
+                            if (PInvoke.ntohs((ushort)row.dwLocalPort) == port)
+                                process.Add(Process.GetProcessById((int)row.dwOwningPid));
+                        }
                     }
                 }
 

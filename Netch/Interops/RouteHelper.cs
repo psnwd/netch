@@ -28,13 +28,13 @@ public static unsafe class RouteHelper
 
         if (inet == AddressFamily.InterNetwork)
         {
-            addr.Address.Ipv4.sin_family = (ushort)ADDRESS_FAMILY.AF_INET;
+            addr.Address.Ipv4.sin_family = ADDRESS_FAMILY.AF_INET;
             if (inet_pton((int)inet, address, &addr.Address.Ipv4.sin_addr) == 0)
                 return false;
         }
         else if (inet == AddressFamily.InterNetworkV6)
         {
-            addr.Address.Ipv6.sin6_family = (ushort)ADDRESS_FAMILY.AF_INET6;
+            addr.Address.Ipv6.sin6_family = ADDRESS_FAMILY.AF_INET6;
             if (inet_pton((int)inet, address, &addr.Address.Ipv6.sin6_addr) == 0)
                 return false;
         }
@@ -52,10 +52,10 @@ public static unsafe class RouteHelper
         {
             if (type != MIB_NOTIFICATION_TYPE.MibInitialNotification)
             {
-                NTSTATUS state;
+                WIN32_ERROR state;
                 if ((state = GetUnicastIpAddressEntry(row)) != 0)
                 {
-                    Log.Error("GetUnicastIpAddressEntry failed: {State}", state.Value);
+                    Log.Error("GetUnicastIpAddressEntry failed: {State}", (uint)state);
                     return;
                 }
 
@@ -74,14 +74,14 @@ public static unsafe class RouteHelper
             }
         }
 
-        NotifyUnicastIpAddressChange((ushort)ADDRESS_FAMILY.AF_INET, Callback, null, new BOOLEAN(byte.MaxValue), ref handle);
+        NotifyUnicastIpAddressChange(ADDRESS_FAMILY.AF_INET, Callback, null, new BOOLEAN(byte.MaxValue), ref handle);
 
         try
         {
-            NTSTATUS state;
+            WIN32_ERROR state;
             if ((state = CreateUnicastIpAddressEntry(&addr)) != 0)
             {
-                Log.Error("CreateUnicastIpAddressEntry failed: {State}", state.Value);
+                Log.Error("CreateUnicastIpAddressEntry failed: {State}", (uint)state);
                 return false;
             }
 

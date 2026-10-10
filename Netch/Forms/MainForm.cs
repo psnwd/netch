@@ -397,7 +397,7 @@ public partial class MainForm : Form
 
     private void ShowHideConsoleToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        var windowStyles = (WINDOW_STYLE)PInvoke.GetWindowLong(new HWND(Program.ConsoleHwnd), WINDOW_LONG_PTR_INDEX.GWL_STYLE);
+        var windowStyles = (WINDOW_STYLE)PInvoke.GetWindowLong(Program.ConsoleHwnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE);
         var visible = windowStyles.HasFlag(WINDOW_STYLE.WS_VISIBLE);
         PInvoke.ShowWindow(Program.ConsoleHwnd, visible ? SHOW_WINDOW_CMD.SW_HIDE : SHOW_WINDOW_CMD.SW_SHOWNOACTIVATE);
     }
