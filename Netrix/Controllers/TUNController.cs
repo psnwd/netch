@@ -219,20 +219,36 @@ namespace Netrix.Controllers
             NetworkInterfaceUtils.SetInterfaceMetric(_tun.InterfaceIndex, 0);
         }
 
+        /// <summary>
+        ///     Every step is independent: when the PC lost its network the physical adapter may be gone, and one failing step
+        ///     (e.g. resetting the metric of a vanished interface) must not skip the rest or break Stop.
+        /// </summary>
         private void ClearRouteTable()
         {
             if (_serverRemoteAddress != null)
-                RouteUtils.DeleteRoute(_outbound.FillTemplate(_serverRemoteAddress.ToString(), 32));
+                Try(() => RouteUtils.DeleteRoute(_outbound.FillTemplate(_serverRemoteAddress.ToString(), 32)));
 
             if (_outbound.Gateway != null)
             {
-                RouteUtils.DeleteRouteFill(_outbound, Global.Settings.TUNTAP.BypassIPs);
-                RouteUtils.DeleteRoute(_outbound.FillTemplate(Utils.Utils.GetHostFromUri(Global.Settings.AioDNS.ChinaDNS), 32));
-                NetworkInterfaceUtils.SetInterfaceMetric(_outbound.InterfaceIndex);
+                Try(() => RouteUtils.DeleteRouteFill(_outbound, Global.Settings.TUNTAP.BypassIPs));
+                Try(() => RouteUtils.DeleteRoute(_outbound.FillTemplate(Utils.Utils.GetHostFromUri(Global.Settings.AioDNS.ChinaDNS), 32)));
+                Try(() => NetworkInterfaceUtils.SetInterfaceMetric(_outbound.InterfaceIndex));
             }
 
             if (_mode != null)
-                RouteUtils.DeleteRouteFill(_outbound, _mode.Bypass);
+                Try(() => RouteUtils.DeleteRouteFill(_outbound, _mode.Bypass));
+        }
+
+        private static void Try(Action step)
+        {
+            try
+            {
+                step();
+            }
+            catch (Exception e)
+            {
+                Log.Warning(e, "Route cleanup step failed, continuing");
+            }
         }
 
         #endregion

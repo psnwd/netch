@@ -42,7 +42,15 @@ public static class UpdateChecker
             var (_, json) = await WebUtil.DownloadStringAsync(WebUtil.CreateRequest(url));
 
             var releases = JsonSerializer.Deserialize<List<Release>>(json)!;
-            LatestRelease = GetLatestRelease(releases, isPreRelease);
+            var latest = GetLatestRelease(releases, isPreRelease);
+            if (latest == null)
+            {
+                Log.Information("No release published yet");
+                NewVersionNotFound?.Invoke(null, EventArgs.Empty);
+                return;
+            }
+
+            LatestRelease = latest;
             Log.Information("Github latest release: {Version}", LatestRelease.tag_name);
             if (VersionUtil.CompareVersion(LatestRelease.tag_name, Version) > 0)
             {
@@ -95,12 +103,12 @@ public static class UpdateChecker
         return sb.ToString();
     }
 
-    private static Release GetLatestRelease(IEnumerable<Release> releases, bool isPreRelease)
+    internal static Release? GetLatestRelease(IEnumerable<Release> releases, bool isPreRelease)
     {
         if (!isPreRelease)
             releases = releases.Where(release => !release.prerelease);
 
         var ordered = releases.OrderByDescending(release => release.tag_name, new VersionUtil.VersionComparer());
-        return ordered.ElementAt(0);
+        return ordered.FirstOrDefault();
     }
 }
