@@ -1,6 +1,6 @@
-# Signs an update archive for the in-app updater (Netch/Services/UpdateSignature.cs verifies it).
+# Signs an update archive for the in-app updater (Netrix/Services/UpdateSignature.cs verifies it).
 #   .\sign.ps1 -GenerateKey              make a key pair: prints the public key, writes the private key to update-signing.key
-#   .\sign.ps1 -File Netch.7z            writes Netch.7z.sig; private key from $Env:UPDATE_SIGNING_KEY (base64 PKCS#8)
+#   .\sign.ps1 -File Netrix.7z            writes Netrix.7z.sig; private key from $Env:UPDATE_SIGNING_KEY (base64 PKCS#8)
 # ECDSA P-256 + SHA-256, IEEE P1363 signature, base64. Keep the private key in the GitHub secret UPDATE_SIGNING_KEY only.
 param (
     [string]$File,

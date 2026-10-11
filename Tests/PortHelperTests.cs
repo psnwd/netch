@@ -20,7 +20,7 @@ namespace Tests
             try
             {
                 var port = (ushort)((IPEndPoint)listener.LocalEndpoint).Port;
-                var type = typeof(Netch.Program).Assembly.GetType("Netch.Utils.PortHelper")!;
+                var type = typeof(Netrix.Program).Assembly.GetType("Netrix.Utils.PortHelper")!;
                 var method = type.GetMethod("GetProcessByUsedTcpPort", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public)!;
                 var found = (IEnumerable<Process>)method.Invoke(null, new object[] { port, AddressFamily.InterNetwork })!;
                 Assert.IsTrue(found.Any(p => p.Id == Environment.ProcessId));

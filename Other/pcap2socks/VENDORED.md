@@ -6,7 +6,7 @@ Source of [zhxie/pcap2socks](https://github.com/zhxie/pcap2socks) (MIT, `crate/L
 | | |
 | --- | --- |
 | Base | upstream `master` @ `07dcd66` ("Fix lints (#33)"), crate version still 0.6.2 |
-| Share mode | `Netch/Controllers/PcapController.cs` runs `pcap2socks.exe --interface \Device\NPF_{id} --destination host:port <preset> [--username --password]` and waits for the `└` banner line |
+| Share mode | `Netrix/Controllers/PcapController.cs` runs `pcap2socks.exe --interface \Device\NPF_{id} --destination host:port <preset> [--username --password]` and waits for the `└` banner line |
 | Build | `build.ps1` downloads the Npcap SDK 1.16 (SHA-256 checked) for `Packet.lib`, then `cargo build --release --locked` in `crate/`; output `..\release\pcap2socks.exe` |
 | Run time | Npcap in WinPcap API-compatible mode must be installed (`Packet.dll`), as before |
 

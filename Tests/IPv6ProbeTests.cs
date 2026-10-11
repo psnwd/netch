@@ -2,8 +2,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Netch.Servers;
-using Netch.Utils;
+using Netrix.Servers;
+using Netrix.Utils;
 
 namespace Tests
 {

@@ -2,8 +2,8 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Netch.Models;
-using Netch.Services;
+using Netrix.Models;
+using Netrix.Services;
 
 namespace Tests
 {
@@ -12,7 +12,7 @@ namespace Tests
     {
         private static string NewDir()
         {
-            var d = Path.Combine(Path.GetTempPath(), "netch-upd-" + Guid.NewGuid());
+            var d = Path.Combine(Path.GetTempPath(), "netrix-upd-" + Guid.NewGuid());
             Directory.CreateDirectory(d);
             return d;
         }
@@ -23,7 +23,7 @@ namespace Tests
             using var za = ZipFile.Open(zip, ZipArchiveMode.Create);
             foreach (var (name, content) in files)
             {
-                using var w = new StreamWriter(za.CreateEntry("Netch/" + name).Open());
+                using var w = new StreamWriter(za.CreateEntry("Netrix/" + name).Open());
                 w.Write(content);
             }
 
@@ -35,12 +35,12 @@ namespace Tests
         {
             var work = NewDir();
             var install = NewDir();
-            File.WriteAllText(Path.Combine(install, "Netch.exe"), "old");
-            var zip = MakeZip(work, ("Netch.exe", "new"));
+            File.WriteAllText(Path.Combine(install, "Netrix.exe"), "old");
+            var zip = MakeZip(work, ("Netrix.exe", "new"));
 
             new Updater(zip, install).ApplyUpdate();
 
-            Assert.AreEqual("new", File.ReadAllText(Path.Combine(install, "Netch.exe")));
+            Assert.AreEqual("new", File.ReadAllText(Path.Combine(install, "Netrix.exe")));
         }
 
         [TestMethod]
@@ -48,15 +48,15 @@ namespace Tests
         {
             var work = NewDir();
             var install = NewDir();
-            File.WriteAllText(Path.Combine(install, "Netch.exe"), "old-exe");
+            File.WriteAllText(Path.Combine(install, "Netrix.exe"), "old-exe");
             File.WriteAllText(Path.Combine(install, "a.dll"), "old-a");
-            // a directory where the update wants a file: moving that file over it fails after Netch.exe was already replaced
+            // a directory where the update wants a file: moving that file over it fails after Netrix.exe was already replaced
             Directory.CreateDirectory(Path.Combine(install, "zzz.dll"));
-            var zip = MakeZip(work, ("Netch.exe", "new-exe"), ("a.dll", "new-a"), ("zzz.dll", "new-z"));
+            var zip = MakeZip(work, ("Netrix.exe", "new-exe"), ("a.dll", "new-a"), ("zzz.dll", "new-z"));
 
             Assert.ThrowsExactly<MessageException>(() => new Updater(zip, install).ApplyUpdate());
 
-            Assert.AreEqual("old-exe", File.ReadAllText(Path.Combine(install, "Netch.exe")));
+            Assert.AreEqual("old-exe", File.ReadAllText(Path.Combine(install, "Netrix.exe")));
             Assert.AreEqual("old-a", File.ReadAllText(Path.Combine(install, "a.dll")));
             Assert.AreEqual(0, Directory.GetFiles(install, "*.old", SearchOption.AllDirectories).Length);
         }

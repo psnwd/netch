@@ -1,8 +1,8 @@
 # tun2socks (rebuilt from `Storage/tun2socks.bin`)
 
-`Storage/tun2socks.bin` is a closed-source DLL that Netch loads for TUN mode. Its source is gone, so this directory is a
+`Storage/tun2socks.bin` is a closed-source DLL that Netrix loads for TUN mode. Its source is gone, so this directory is a
 **rewrite recovered from the binary** (Ghidra decompilation plus the Go function tables). It builds, passes its tests and
-matches the original function for function, but it has **not** been run inside Netch (that needs admin and `wintun.dll`).
+matches the original function for function, but it has **not** been run inside Netrix (that needs admin and `wintun.dll`).
 
 ## What the binary is
 
@@ -22,7 +22,7 @@ resolve anywhere. `go version -m` shows the build info the rewrite pins:
 
 | Path | Origin |
 | --- | --- |
-| `main.go` | Recovered. The C ABI Netch calls (`tun_dial`, `tun_init`, `tun_free`, `tun_luid`, `tun_getUP`, `tun_getDL`). |
+| `main.go` | Recovered. The C ABI Netrix calls (`tun_dial`, `tun_init`, `tun_free`, `tun_luid`, `tun_getUP`, `tun_getDL`). |
 | `proxies/` | Recovered. TCP: IPv4 targets in the bypass list are dialed directly from the bind address, everything else goes through SOCKS5. UDP: port 53 goes to `adns`. |
 | `proxies/socks/` | Recovered. SOCKS5 CONNECT and UDP ASSOCIATE. |
 | `adns/` | Recovered. PTR queries are answered with `aioCloud`, other queries go to the configured DNS server over TCP or TCP-TLS. |
@@ -71,6 +71,6 @@ go1.17.1 build -a -buildmode=c-shared -trimpath -asmflags "-s -w" -ldflags "-s -
 
 It is the **NetFilter SDK 2 v1.6 WFP driver** by Vitaly Sidorov (PDB path `...\nfsdk2_1.6\driver_wfp\...\netfilter2.pdb`, x64,
 file version 1.6.3.0), a commercial closed-source product. The headers in `Redirector/include/` carry "Copyright (C) Vitaly Sidorov,
-All rights reserved". Its source is not available and I did not reconstruct it. The user-mode interface Netch needs is already
+All rights reserved". Its source is not available and I did not reconstruct it. The user-mode interface Netrix needs is already
 documented by the vendored `nfdriver.h` and `nfapi.h`. Realistic ways forward: license the SDK, or replace Process mode with another
 capture mechanism (for example WinDivert or your own WFP callout driver).

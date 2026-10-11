@@ -1,4 +1,4 @@
-# PLAN — Modernize Netch 1.x
+# PLAN — Modernize Netrix 1.x
 
 Goal: move off EOL .NET 6, refresh deps and bundled binaries, make CI/build reliable, add real tests. No new features, no behavior change.
 
@@ -21,7 +21,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md), [TASK.md](TASK.md), [QA.md](QA.md), [RIS
 
 ## Phases
 1. **Baseline** — build current `main` clean, record output tree, add characterization tests (share-link parse/format, mode JSON round-trip, config load). Exit: green CI on unchanged code.
-2. **Framework bump** — `common.props`, `Netch.csproj`, `Tests` to new TFM; fix analyzer/CsWin32 breaks (warnings are errors). Exit: app starts, connects in each mode.
+2. **Framework bump** — `common.props`, `Netrix.csproj`, `Tests` to new TFM; fix analyzer/CsWin32 breaks (warnings are errors). Exit: app starts, connects in each mode.
 3. **NuGet refresh** — bump one group at a time (Serilog, System.*, Fody/ConfigureAwait, CsWin32 to stable, MaxMind, TraceEvent, TaskScheduler, Stun.Net). Replace dead packages if needed. Exit: `dotnet list package --vulnerable --deprecated` clean.
 4. **Native + bundled binaries** — rebuild `Redirector`/`RouteHelper` on current VS toolset; update `Other/*` (aiodns Go modules, pcap2socks, v2ray-sn, wintun) and prebuilt `Storage/` binaries; record versions + hashes. Exit: Process/TUN/Share modes pass QA.
 5. **CI/CD** — bump actions, replace `actions-rs`, `upload-artifact@v4`, add `dotnet test` step, pin Go/Rust, fix cache keys. Exit: green PR build, release artifact layout identical.
@@ -30,7 +30,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md), [TASK.md](TASK.md), [QA.md](QA.md), [RIS
 7. **Performance and optimization** (after the release candidate) - measure first, then change one thing at a time; see the Performance section in [TASK.md](TASK.md). Goals: higher throughput and lower latency through TUN mode, faster start, smaller and lighter app. Rule: no optimization without a before/after number from the same test.
 
 ## Out of scope
-New protocols, UI redesign, ARM64 (blocked on x64-only prebuilt binaries), Netch 2.0 rewrite. WebMode and IPv6 in TUN mode were added during the update. A sing-box based core (TUN and process routing) is an open option, see TASK.md.
+New protocols, UI redesign, ARM64 (blocked on x64-only prebuilt binaries), Netrix 2.0 rewrite. WebMode and IPv6 in TUN mode were added during the update. A sing-box based core (TUN and process routing) is an open option, see TASK.md.
 
 ## Done when
 All [QA.md](QA.md) release gates pass and every [TASK.md](TASK.md) item is checked.

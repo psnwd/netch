@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Netch.Servers;
-using Netch.Utils;
+using Netrix.Servers;
+using Netrix.Utils;
 
 namespace Tests
 {
@@ -33,7 +33,7 @@ namespace Tests
             Assert.AreEqual(s.Remark, back.Remark);
         }
 
-        static void RoundTrip<T>(T s, params Func<T, object>[] props) where T : Netch.Models.Server
+        static void RoundTrip<T>(T s, params Func<T, object>[] props) where T : Netrix.Models.Server
         {
             var back = (T)ShareLink.ParseText(ShareLink.GetShareLink(s)).Single();
             Assert.AreEqual(s.Hostname, back.Hostname);

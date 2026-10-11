@@ -4,7 +4,7 @@ Current state (`main` @ 9d99eb1) plus target-state notes for the modernization i
 
 ## Components
 ```
-Netch.exe (WinForms, .NET)              native / external (bin\)
+Netrix.exe (WinForms, .NET)              native / external (bin\)
 ├─ Forms/        UI                     ├─ Redirector.bin + nfapi.dll + nfdriver.sys  process capture (Netfilter)
 ├─ Controllers/  runtime lifecycle  ──► ├─ tun2socks.bin + wintun.dll                 TUN mode
 ├─ Servers/      per-protocol           ├─ pcap2socks / Npcap                         Share mode
@@ -31,7 +31,7 @@ Netch.exe (WinForms, .NET)              native / external (bin\)
 `data\` (settings, servers, subscriptions JSON), `mode\` (mode files), `i18n\`, `logging\` (Serilog). Formats must stay backward compatible.
 
 ## Build graph
-`build.ps1` runs `Other/build.ps1` (Go, MSYS2 C++, Rust builds), then `dotnet publish Netch` (win-x64, single-file, self-contained), then `msbuild Redirector`, then `msbuild RouteHelper`, then assembles `release\` (+ `Storage\` assets, GeoIP mmdb download).
+`build.ps1` runs `Other/build.ps1` (Go, MSYS2 C++, Rust builds), then `dotnet publish Netrix` (win-x64, single-file, self-contained), then `msbuild Redirector`, then `msbuild RouteHelper`, then assembles `release\` (+ `Storage\` assets, GeoIP mmdb download).
 
 ## Target-state changes
 - TFM `net10.0-windows`; `Tests` same TFM (currently `net5.0`).

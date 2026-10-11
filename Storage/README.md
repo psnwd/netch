@@ -1,5 +1,5 @@
-# Netch
-Prebuilt binaries for Netch version 1
+# Netrix
+Prebuilt binaries for Netrix (from the original Netch 1.x project)
 
 ## aiodns
 https://github.com/netchx/netch

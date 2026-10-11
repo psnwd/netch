@@ -1,6 +1,6 @@
 # Performance results
 
-CPU = % of one core summed over Netch, v2ray-sn during the run. Url/ping host fixed in bench.ps1 defaults.
+CPU = % of one core summed over Netrix, v2ray-sn during the run. Url/ping host fixed in bench.ps1 defaults.
 
 | date | label | 1 stream Mbps | CPU% | 16 streams Mbps | CPU% | ping ms | dns ms | mem MB | 40 small req ms |
 |---|---|---|---|---|---|---|---|---|---|

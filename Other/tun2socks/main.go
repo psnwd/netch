@@ -1,7 +1,7 @@
-// tun2socks.bin: a wintun based TUN to SOCKS5 forwarder, loaded by Netch as a DLL.
+// tun2socks.bin: a wintun based TUN to SOCKS5 forwarder, loaded by Netrix as a DLL.
 //
-// Rebuilt from the decompiled Storage/tun2socks.bin (go1.17.1). Netch drives it through
-// the exported C functions below, see Netch/Interops/tun2socks.cs.
+// Rebuilt from the decompiled Storage/tun2socks.bin (go1.17.1). Netrix drives it through
+// the exported C functions below, see Netrix/Interops/tun2socks.cs.
 package main
 
 // #include <stdlib.h>
@@ -28,7 +28,7 @@ import (
 	"rixcloud.moe/aiocloud/tun2socks/structs"
 )
 
-// First argument of tun_dial, same order as NameList in Netch/Interops/tun2socks.cs.
+// First argument of tun_dial, same order as NameList in Netrix/Interops/tun2socks.cs.
 const (
 	typeBypassBind = iota // local address that direct connections bind to
 	typeBypassList        // file with bypass CIDRs, one per line, or "disabled"
@@ -80,7 +80,7 @@ var (
 )
 
 // init sends log output and Go runtime crash reports (panics, fatal errors) to logging\tun2socks.log:
-// Netch is a GUI process without a console, so they would otherwise vanish.
+// Netrix is a GUI process without a console, so they would otherwise vanish.
 func init() {
 	file, err := os.OpenFile(`logging\tun2socks.log`, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o644)
 	if err != nil {

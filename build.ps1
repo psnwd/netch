@@ -32,7 +32,7 @@ Push-Location (Split-Path $MyInvocation.MyCommand.Path -Parent)
 $toolsetArgs = @()
 if ( $PlatformToolset ) { $toolsetArgs = @("-property:PlatformToolset=$PlatformToolset") }
 
-# keep data\ (settings, when Netch runs from the output folder); everything else is replaced
+# keep data\ (settings, when Netrix runs from the output folder); everything else is replaced
 if ( Test-Path -Path $OutputPath ) {
     Get-ChildItem $OutputPath -Force -Exclude 'data' | Remove-Item -Recurse -Force
 } else {
@@ -62,9 +62,9 @@ cp -Force '.\Other\release\*.bin' "$OutputPath\bin"
 cp -Force '.\Other\release\*.dll' "$OutputPath\bin"
 cp -Force '.\Other\release\*.exe' "$OutputPath\bin"
 
-if ( -Not ( Test-Path ".\Netch\bin\$Configuration" ) ) {
+if ( -Not ( Test-Path ".\Netrix\bin\$Configuration" ) ) {
 	Write-Host
-	Write-Host 'Building Netch'
+	Write-Host 'Building Netrix'
 
 	dotnet publish `
 		-c $Configuration `
@@ -76,11 +76,11 @@ if ( -Not ( Test-Path ".\Netch\bin\$Configuration" ) ) {
 		-p:PublishReadyToRun=$PublishReadyToRun `
 		-p:PublishReadyToRunShowWarnings=$PublishReadyToRun `
 		-p:IncludeNativeLibrariesForSelfExtract=$SelfContained `
-		-o ".\Netch\bin\$Configuration" `
-		'.\Netch\Netch.csproj'
+		-o ".\Netrix\bin\$Configuration" `
+		'.\Netrix\Netrix.csproj'
 	if ( -Not $? ) { exit $lastExitCode }
 }
-cp -Force ".\Netch\bin\$Configuration\Netch.exe" $OutputPath
+cp -Force ".\Netrix\bin\$Configuration\Netrix.exe" $OutputPath
 
 if ( -Not ( Test-Path ".\Redirector\bin\$Configuration" ) ) {
 	Write-Host

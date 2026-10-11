@@ -2,15 +2,15 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Netch;
-using Netch.JsonConverter;
-using Netch.Models;
-using Netch.Models.Modes;
-using Netch.Models.Modes.ProcessMode;
-using Netch.Models.Modes.ShareMode;
-using Netch.Models.Modes.TunMode;
-using Netch.Models.Modes.WebMode;
-using Netch.Utils;
+using Netrix;
+using Netrix.JsonConverter;
+using Netrix.Models;
+using Netrix.Models.Modes;
+using Netrix.Models.Modes.ProcessMode;
+using Netrix.Models.Modes.ShareMode;
+using Netrix.Models.Modes.TunMode;
+using Netrix.Models.Modes.WebMode;
+using Netrix.Utils;
 
 namespace Tests
 {
@@ -19,7 +19,7 @@ namespace Tests
     {
         static T RoundTrip<T>(T mode) where T : Mode
         {
-            mode.FullName = Path.Combine(Path.GetTempPath(), $"netch-test-{System.Guid.NewGuid()}.json");
+            mode.FullName = Path.Combine(Path.GetTempPath(), $"netrix-test-{System.Guid.NewGuid()}.json");
             try
             {
                 mode.WriteFile();
@@ -72,7 +72,7 @@ namespace Tests
         [TestMethod]
         public void Setting_EmptyJson_UsesDefaults()
         {
-            var o = Netch.Global.NewCustomJsonSerializerOptions();
+            var o = Netrix.Global.NewCustomJsonSerializerOptions();
             o.Converters.Add(new ServerConverterWithTypeDiscriminator());
             o.Converters.Add(new JsonStringEnumConverter());
             var s = JsonSerializer.Deserialize<Setting>("{}", o);

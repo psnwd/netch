@@ -1,4 +1,4 @@
-# Benchmark one path (direct / TUN / WebMode). Switch Netch mode by hand, then run:
+# Benchmark one path (direct / TUN / WebMode). Switch Netrix mode by hand, then run:
 #   pwsh .docs\bench.ps1 -Label "tun-baseline"
 # Appends a row to .docs\PERF.md. Keep -Url/-PingHost fixed so builds compare.
 param(
@@ -9,7 +9,7 @@ param(
     [string]$DnsName = 'example.com',
     [string]$IpFlag = "-4", # IPv6 download hangs through the Trojan server; pass "" to test it
     [int]$Streams = 16,
-    [string[]]$Procs = @('Netch', 'v2ray-sn')
+    [string[]]$Procs = @('Netrix', 'v2ray-sn')
 )
 $ErrorActionPreference = 'Stop'
 

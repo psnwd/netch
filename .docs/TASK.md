@@ -5,26 +5,26 @@ Phases map to [PLAN.md](PLAN.md). One task per commit/PR.
 ## P1 Baseline
 - [x] Fix baseline build on SDK 10: `AssemblyInfo.cs` `SupportedOSPlatform` Windows7.0 → Windows8.1 (CA1416 on inet_pton/ntohs)
 - [ ] Build `main` clean with `.\build.ps1`; save file list + sizes of `release\`
-- [x] Tests: reference `Netch` from `Tests` (project ref; Tests TFM moved to net6.0-windows + RollForward=Major, drop RollForward in P2)
+- [x] Tests: reference `Netrix` from `Tests` (project ref; Tests TFM moved to net6.0-windows + RollForward=Major, drop RollForward in P2)
 - [x] Tests: share-link round-trip per protocol (WireGuard `[Ignore]`d, see Known bugs)
 - [x] Tests: `Mode` JSON load/save round-trip for Process/TUN/Share
 - [x] Tests: `Setting` default load from `{}`
 - [x] CI: run `dotnet test`
 
 ## P2 Framework
-- [x] `common.props`, `Netch.csproj`: `net10.0-windows`
+- [x] `common.props`, `Netrix.csproj`: `net10.0-windows`
 - [x] `Tests.csproj`: same TFM (MSTest/Test.Sdk versions bump in P3)
 - [ ] `RedirectorTester`: port to SDK-style or delete if unused
 - [x] Fix build errors/analyzer warnings: WFO1000 on `SyncGlobalCheckBox` (DesignerSerializationVisibility.Hidden)
 - [x] `global.json`: `rollForward: latestFeature`
-- [ ] Verify single-file self-contained publish runs on clean Win10/11 VM (publish succeeds locally: 190MB Netch.exe; runtime launch untested)
+- [ ] Verify single-file self-contained publish runs on clean Win10/11 VM (publish succeeds locally: 190MB Netrix.exe; runtime launch untested)
 
 ## P3 NuGet
 - [x] `dotnet list package --outdated --vulnerable --deprecated`
 - [x] Fody + ConfigureAwait.Fody
 - [x] Serilog (+ Extensions.Hosting, Sinks.*)
 - [x] CsWin32 beta to stable (0.3.360): HWND ctor, ADDRESS_FAMILY/WIN32_ERROR in RouteHelper.cs, PortHelper.cs rewritten with byte[] + fixed (also fixes unfreed AllocHGlobal). PortHelper covered by test; RouteHelper.CreateUnicastIPCS and console show/hide need manual QA (TUN mode)
-- [x] MaxMind.GeoIP2, TaskScheduler, WindowsJobAPI, Stun.Net 10.0.10 (ProxyFactory.CreateProxy replaced by `new Socks5UdpProxy(...)`; NAT test needs manual QA with a real SOCKS5 server), HMBSbige.SingleInstance 7.0.0 (int command instead of string; handler marshals to UI thread via BeginInvoke; identifier is now plain `Netch`, no `Global\` prefix so single-instance is per session; QA: second launch must focus the first window). WindowsFirewallHelper: already latest
+- [x] MaxMind.GeoIP2, TaskScheduler, WindowsJobAPI, Stun.Net 10.0.10 (ProxyFactory.CreateProxy replaced by `new Socks5UdpProxy(...)`; NAT test needs manual QA with a real SOCKS5 server), HMBSbige.SingleInstance 7.0.0 (int command instead of string; handler marshals to UI thread via BeginInvoke; identifier is now plain `Netrix`, no `Global\` prefix so single-instance is per session; QA: second launch must focus the first window). WindowsFirewallHelper: already latest
 - [x] System.* 7.0 to match TFM (Management, ServiceController; CodePages removed, in-box)
 - [x] Microsoft.Diagnostics.Tracing.TraceEvent, VisualStudio.Threading
 - [ ] Dependabot: add grouping to cut PR noise
@@ -33,7 +33,7 @@ Phases map to [PLAN.md](PLAN.md). One task per commit/PR.
 - [x] Redirector/RouteHelper rebuild: builds in CI (run 38080196958, windows-2022). RedirectorTester not run (needs driver + admin)
 - [x] `Other/aiodns`: go 1.25.0, miekg/dns 1.1.73; c-shared build verified locally. Runtime check in QA (DNS section)
 - [x] `Other/*` build in CI. `Other/pcap2socks` v0.6.2, `wintun` 0.13, `v2ray-sn` v5.0.16: URLs still resolve (HTTP 200). Version bumps not done (need Windows runtime testing). v2ray-sn needed Go 1.18 (SagerNet gVisor fork) and clash pinned to v1.11.0 (newest clash needs Go 1.20); both fixed in CI
-- [x] `Storage/tun2socks.bin`, `nfdriver.sys`: documented. tun2socks.bin is a Netch-specific c-shared build (go1.17.1), not an upstream exe; patch source not in repo, cannot refresh. nfdriver.sys 1.6.3.0 tied to Redirector
+- [x] `Storage/tun2socks.bin`, `nfdriver.sys`: documented. tun2socks.bin is a Netrix-specific c-shared build (go1.17.1), not an upstream exe; patch source not in repo, cannot refresh. nfdriver.sys 1.6.3.0 tied to Redirector
 - [x] `Storage/README.md`: version + sha256 table
 - [x] `build.ps1`: GeoIP download fails the build on error (`-ErrorAction Stop`). Not hash-pinned: Loyalsoldier `release` branch is rolling
 
@@ -60,7 +60,7 @@ Phases map to [PLAN.md](PLAN.md). One task per commit/PR.
 - [x] CI uses `windows-2022` runner; `setup-dotnet` 10 works there (build.yml green, see CI status)
 
 ## CI status
-- [x] `Netch Build CI` green on `modernize-net10` (commit 2e945ec): build 188 s, tests pass, `release` artifact 97.2 MB
+- [x] `Netrix Build CI` green on `modernize-net10` (commit 2e945ec): build 188 s, tests pass, `release` artifact 97.2 MB
 - [ ] `release.yml` carries the same Go 1.18 / .NET 10 changes but only runs on tag push; untested
 - [ ] Compare artifact layout with a build of `main` (QA automated check)
 - [x] WebRequest replaced by HttpClient (WebUtil; tests use a local HttpListener). Behaviour kept: non-2xx throws, timeout, UA, per-call proxy for subscriptions. Download body has no per-read timeout (WebRequest had ReadWriteTimeout)
@@ -75,7 +75,7 @@ Phases map to [PLAN.md](PLAN.md). One task per commit/PR.
 ## Update path
 - [x] Rollback: a failed apply restores every `*.old` file (was: half-installed app). Test fails without it
 - [x] Pick the asset whose name matches the hash table (was `assets[0]`); case-insensitive hash compare; delete a download with a wrong hash
-- [x] Signature: releases are signed (ECDSA P-256, `sign.ps1`, GitHub secret `UPDATE_SIGNING_KEY`, asset `Netch.7z.sig`); `Updater` flow refuses an unsigned or badly signed release (`UpdateSignature`, 4 tests + sign.ps1 round trip). Setup: add the secret from `update-signing.key`, then tag a release. Until a signed release exists the in-app update refuses and the user installs from the release page
+- [x] Signature: releases are signed (ECDSA P-256, `sign.ps1`, GitHub secret `UPDATE_SIGNING_KEY`, asset `Netrix.7z.sig`); `Updater` flow refuses an unsigned or badly signed release (`UpdateSignature`, 4 tests + sign.ps1 round trip). Setup: add the secret from `update-signing.key`, then tag a release. Until a signed release exists the in-app update refuses and the user installs from the release page
 - [ ] Not done: update runs inside the running process, no helper exe; real update still needs manual QA on Windows
 
 ## Controller tests
@@ -96,7 +96,7 @@ Phases map to [PLAN.md](PLAN.md). One task per commit/PR.
 - [ ] Rollback: restore the old build.ps1 (downloads the v0.6.2 release zip)
 
 ## Found while testing on Windows (2026-10-11)
-- [x] `aiodns` crashed Netch when an upstream DNS lookup failed (`WriteMsg(nil)` panic, existed before the update): both handlers now answer SERVFAIL; test added
+- [x] `aiodns` crashed Netrix when an upstream DNS lookup failed (`WriteMsg(nil)` panic, existed before the update): both handlers now answer SERVFAIL; test added
 - [x] `tun2socks.bin` rewrite now writes Go panics and logs to `logging/tun2socks.log` (a GUI process has no console, so they were invisible)
 - [x] TUN mode leaked IPv6 (YouTube over IPv6 never entered the tunnel, "Used" stayed at 700 KB): IPv6 address + `::/0` on-link route added to the adapter, setting `TUNTAP.ProxyIPv6` (default on). Owner reports TUN mode working
 - [ ] Still untested on real traffic: Process mode, Share mode, WebMode, update/rollback, a second launch focusing the first window
@@ -119,13 +119,13 @@ Rule: measure first. Every item needs a before/after number from the same test, 
 - [x] DNS: `adns` and `aiodns` open a new TCP (or TLS) connection per query; add UDP upstream or a persistent connection, and a response cache in `aiodns` — done: response cache (NOERROR only, TTL capped at 60 s, 4096 entries) in both; test in `aiodns/cache_test.go`. Not done: UDP upstream (changes proxy semantics) and a persistent connection (needs a pool); not yet measured
 - [ ] Remove the loopback hop: tun2socks to v2ray-sn is SOCKS5 over TCP on 127.0.0.1; measure the cost, and compare with a core that has its own TUN (sing-box, see below)
 - [ ] v2ray config: `UseMux` is off by default; measure mux, TCP fast open and keep-alive settings per transport (ws, grpc, tcp) before changing defaults — no code needed, both knobs already exist (Settings: Use Mux, TCP Fast Open; per-server Use Mux for VMess/VLESS); keep-alive has no setting, add only if the numbers ask for it. Protocol: same server, same mode, `bench.ps1 -Label tun-default`, then flip one knob and rerun (`tun-mux`, `tun-tfo`), per transport (ws, grpc, tcp). The new "40 small req ms" column is the one mux and TFO should move (connection setup); mux usually costs single-stream Mbps. Change a default only if a row shows a win without hurting the others
-- [ ] Go runtime in the two DLLs (`aiodns.bin`, `tun2socks.bin`) and `v2ray-sn`: GC settings (`GOGC`, memory limit) and `GOMAXPROCS` when the machine is busy — no code needed to measure: nothing sets these today (defaults GOGC=100, no limit, GOMAXPROCS=all cores) and the Go runtime reads `GOGC`, `GOMEMLIMIT`, `GOMAXPROCS` from the environment, which Netch, the two DLLs (loaded in-process) and `v2ray-sn` (child) all inherit. Protocol: `$env:GOGC=200; .\Netch.exe` (or `GOMEMLIMIT=200MiB`, `GOMAXPROCS=2`), same server and mode, `bench.ps1 -Label tun-gogc200`; compare Mbps, CPU% and mem MB against `tun-default`. Hard-code (`debug.SetGCPercent`, `SetMemoryLimit` in `tun_init`/`aiodns_init`, env on the `v2ray-sn` start) only for a value that wins
+- [ ] Go runtime in the two DLLs (`aiodns.bin`, `tun2socks.bin`) and `v2ray-sn`: GC settings (`GOGC`, memory limit) and `GOMAXPROCS` when the machine is busy — no code needed to measure: nothing sets these today (defaults GOGC=100, no limit, GOMAXPROCS=all cores) and the Go runtime reads `GOGC`, `GOMEMLIMIT`, `GOMAXPROCS` from the environment, which Netrix, the two DLLs (loaded in-process) and `v2ray-sn` (child) all inherit. Protocol: `$env:GOGC=200; .\Netrix.exe` (or `GOMEMLIMIT=200MiB`, `GOMAXPROCS=2`), same server and mode, `bench.ps1 -Label tun-gogc200`; compare Mbps, CPU% and mem MB against `tun-default`. Hard-code (`debug.SetGCPercent`, `SetMemoryLimit` in `tun_init`/`aiodns_init`, env on the `v2ray-sn` start) only for a value that wins
 - [ ] wintun: ring buffer size and packet batching in the read loop (`device.Read` one packet per call today) — checked, deferred: the pinned wireguard-go (2021) has a single-packet `Read` and ring size is fixed at 8 MiB in the library (`StartSession(0x800000)`, allowed 128 KiB to 64 MiB), already large for a 1500 MTU stream so no change planned; batching means upgrading wireguard-go (new `Read([][]byte)` API) — do only if the benchmark shows the read loop is CPU-bound
 - [ ] MTU: 1500 on the adapter; check fragmentation against the server path (try 1400 and 1280 if tunnels over PPPoE or mobile)
 - [x] Share mode (pcap2socks): same buffer/UDP questions, plus tokio worker threads and the LRU size (256 UDP ports) — checked in `Other/pcap2socks/crate`, no change: relay read buffers are already 64 KiB (`u16::MAX`), receive window is 64 KiB with window scaling up to 16 MiB; `#[tokio::main]` uses the default multi-thread runtime (one worker per core), nothing to tune for a per-connection task design; the 256-entry LRU (`MAX_UDP_PORT`) maps LAN-side UDP source ports to local sockets, only a device with more than 256 live UDP flows evicts, raise it only if one is seen. Not measurable without Npcap and a second device
 
 ### Accuracy and cheap telemetry
-- [x] Bandwidth counter: Netch counts bytes with an ETW kernel trace of the `v2ray-sn` process only. `tun_getUP` and `tun_getDL` already exist in the DLL and are unused; use them for TUN mode (cheaper than ETW, includes upload, and counts what really crossed the tunnel) — done for TUN mode: `Bandwidth.NetTraffic` reads `tun_getDL` (download only; ETW still used for other modes). Not run against real traffic; upload display is the next item
+- [x] Bandwidth counter: Netrix counts bytes with an ETW kernel trace of the `v2ray-sn` process only. `tun_getUP` and `tun_getDL` already exist in the DLL and are unused; use them for TUN mode (cheaper than ETW, includes upload, and counts what really crossed the tunnel) — done for TUN mode: `Bandwidth.NetTraffic` reads `tun_getDL` (download only; ETW still used for other modes). Not run against real traffic; upload display is the next item
 - [x] Show upload and download speed separately — done for TUN mode (↓ and ↑ labels from `tun_getDL`/`tun_getUP`); other modes keep the single "↑↓" label because ETW only counts received bytes. Not run on real traffic
 
 ### Startup and responsiveness
@@ -138,8 +138,8 @@ Rule: measure first. Every item needs a before/after number from the same test, 
 - [ ] Time to first window on a cold start of the 187 MB single-file exe (self-extract); try ReadyToRun and `EnableCompressionInSingleFile` trade-offs
 
 ### Size and memory
-- [ ] `Netch.exe` is 187 MB self-contained; compare framework-dependent, trimming (WinForms limits), and compression for download size — measured (Release, win-x64, single file, 2026-10-11): self-contained 178.2 MB, self-contained + `EnableCompressionInSingleFile` 77.5 MB, framework-dependent 13.9 MB (needs the .NET 10 desktop runtime installed). Trimming not tried (WinForms is not trim-safe). Compression costs start-up time (assemblies inflate on every launch), so time the cold start of the 77.5 MB build before switching `build.ps1`; framework-dependent would cut the download 13x but changes the install requirement, owner decision
-- [ ] Idle memory of `Netch.exe` was about 180 MB while running; find what holds it (ETW session, form designer resources, logging)
+- [ ] `Netrix.exe` is 187 MB self-contained; compare framework-dependent, trimming (WinForms limits), and compression for download size — measured (Release, win-x64, single file, 2026-10-11): self-contained 178.2 MB, self-contained + `EnableCompressionInSingleFile` 77.5 MB, framework-dependent 13.9 MB (needs the .NET 10 desktop runtime installed). Trimming not tried (WinForms is not trim-safe). Compression costs start-up time (assemblies inflate on every launch), so time the cold start of the 77.5 MB build before switching `build.ps1`; framework-dependent would cut the download 13x but changes the install requirement, owner decision
+- [ ] Idle memory of `Netrix.exe` was about 180 MB while running; find what holds it (ETW session, form designer resources, logging)
 - [ ] Lower background CPU when idle (timers, delay tests, subscription updates running in parallel) — partly done: the 10 s delay test (`DelayTestHelper`, pings every server, 16 at a time) now skips ticks while the window is in the tray or minimized. Subscription updates only run at open (`UpdateServersWhenOpened`), no periodic timer found. Not measured; builds
 
 ### Next, in order (added 2026-10-11)
@@ -155,3 +155,12 @@ Rule: measure first. Every item needs a before/after number from the same test, 
 ### Bigger option (decide before investing in the items above)
 - [ ] sing-box as the core and TUN: it has its own TUN inbound, process-name routing and per-protocol speed work, and would replace tun2socks, wintun glue and the closed-source NetFilter driver. Loses ShadowsocksR, mKCP and legacy XTLS and needs a new config generator. Prototype for TUN mode only, compare with the harness numbers, then decide
 
+
+## Rebrand to Netrix (2026-10-11)
+- [x] Netch X -> Netrix: folders (`Netrix/`, `Netrix.sln`, `Netrix.csproj`), namespace, `Netrix.exe`, release archive `Netrix.7z` (top-level folder `Netrix`), UI text, tests, docs, CI
+- [x] Repo `github.com/psnwd/netrix`: update checker (`UpdateChecker.Owner/Repo`), About, Help, `origin` remote
+- [x] Logos in `.assets/`; app icon and About image generated from `.assets/Netrix.png` (`Netrix/Resources/Netrix.ico`, 16-256 px)
+- [x] Removed: Telegram links/badges, `docs.netch.org`/`netch.org` links (no website yet), JetBrains sponsor block, About sponsor link. FAQ menu item is now "Report an issue" (GitHub issues)
+- [x] Kept as credit: LICENSE, NOTICE.txt and README name the original Netch project (GPLv3 requires it)
+- [ ] Upgrade note: Netrix is a new product for the updater: it does not update an old Netch install, and the Windows startup task, firewall rule names and single-instance id are now "Netrix"
+- [ ] First release must be signed (see Update path) before in-app update works

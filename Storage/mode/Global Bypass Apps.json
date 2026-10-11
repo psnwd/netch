@@ -7,7 +7,7 @@
     ".*"
   ],
   "bypass": [
-    "\Netch\\",
+    "\Netrix\\",
     "qbittorrent.exe",
     "utorrent.exe",
     "steam.exe",

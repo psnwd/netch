@@ -7,7 +7,7 @@
     ".*"
   ],
   "bypass": [
-    "\\Netch\\"
+    "\\Netrix\\"
   ],
   "filterIntranet": true,
   "filterLoopback": false,

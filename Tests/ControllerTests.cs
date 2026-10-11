@@ -5,10 +5,10 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32;
-using Netch.Controllers;
-using Netch.Models;
-using Netch.Models.Modes.WebMode;
-using Netch.Servers;
+using Netrix.Controllers;
+using Netrix.Models;
+using Netrix.Models.Modes.WebMode;
+using Netrix.Servers;
 
 namespace Tests
 {
@@ -50,11 +50,11 @@ namespace Tests
         [ClassInitialize]
         public static void Init(TestContext _)
         {
-            // Guard resolves bin\<file> against the current directory, runs in NetchDir\bin and logs to logging\
+            // Guard resolves bin\<file> against the current directory, runs in NetrixDir\bin and logs to logging\
             Directory.CreateDirectory("bin");
             Directory.CreateDirectory("logging");
-            Directory.CreateDirectory(Path.Combine(Netch.Global.NetchDir, "bin"));
-            Directory.CreateDirectory(Path.Combine(Netch.Global.NetchDir, "data"));
+            Directory.CreateDirectory(Path.Combine(Netrix.Global.NetrixDir, "bin"));
+            Directory.CreateDirectory(Path.Combine(Netrix.Global.NetrixDir, "data"));
             File.Copy(Path.Combine(Environment.SystemDirectory, "cmd.exe"), Path.Combine("bin", "cmd.exe"), true);
         }
 
@@ -102,7 +102,7 @@ namespace Tests
 
         // ---- WebController: Windows system proxy ----
 
-        private const string TestRoot = @"Software\NetchTest";
+        private const string TestRoot = @"Software\NetrixTest";
         private const string TestKey = TestRoot + @"\InternetSettings";
 
         [TestMethod]
@@ -173,7 +173,7 @@ namespace Tests
         private static async Task<JsonElement> Config(Server s)
         {
             var cfg = await V2rayConfigUtils.GenerateClientConfigAsync(s);
-            return JsonSerializer.SerializeToElement(cfg, Netch.Global.NewCustomJsonSerializerOptions());
+            return JsonSerializer.SerializeToElement(cfg, Netrix.Global.NewCustomJsonSerializerOptions());
         }
 
         [TestMethod]
@@ -182,7 +182,7 @@ namespace Tests
             var c = await Config(new Socks5Server("127.0.0.1", 1080));
             var inbound = c.GetProperty("inbounds")[0];
             Assert.AreEqual("socks", inbound.GetProperty("protocol").GetString());
-            Assert.AreEqual(Netch.Global.Settings.Socks5LocalPort, inbound.GetProperty("port").GetInt32());
+            Assert.AreEqual(Netrix.Global.Settings.Socks5LocalPort, inbound.GetProperty("port").GetInt32());
         }
 
         [TestMethod]

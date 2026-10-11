@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Netch.Services;
+using Netrix.Services;
 
 namespace Tests
 {
