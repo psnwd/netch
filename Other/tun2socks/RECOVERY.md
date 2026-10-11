@@ -1,68 +1,76 @@
-# Recovering `Storage/tun2socks.bin`
+# tun2socks (rebuilt from `Storage/tun2socks.bin`)
 
-Status: **partial**. `main.go.recovered` is reconstructed from decompiled output; the rest is only decompiled, not rewritten.
-Nothing here has been compiled or compared with the original binary.
+`Storage/tun2socks.bin` is a closed-source DLL that Netch loads for TUN mode. Its source is gone, so this directory is a
+**rewrite recovered from the binary** (Ghidra decompilation plus the Go function tables). It builds, passes its tests and
+matches the original function for function, but it has **not** been run inside Netch (that needs admin and `wintun.dll`).
 
 ## What the binary is
 
-`tun2socks.bin` is **not** upstream `xjasonlyu/tun2socks` (which `Storage/README.md` used to link). It is a
-Windows DLL (`-buildmode=c-shared`, x64) built with **go1.17.1** from the private module
-`rixcloud.moe/aiocloud/tun2socks` (AioCloud, the same author line as Netch 1.x). The module host
-`rixcloud.moe` no longer resolves and the module is not on the Go proxy or GitHub, so the original source is not
-obtainable. `go version -m tun2socks.bin` reads the build info:
+Not upstream `xjasonlyu/tun2socks`. It is a Windows DLL (`-buildmode=c-shared`, x64) built with go1.17.1 from the private
+module `rixcloud.moe/aiocloud/tun2socks` (AioCloud). The module host and `github.com/aiocloud/shadowsocks` no longer
+resolve anywhere. `go version -m` shows the build info the rewrite pins:
 
 | Dependency | Version |
 | --- | --- |
-| github.com/aiocloud/shadowsocks | v0.0.0-20210731095610-40f201c6eb4a (not on GitHub either) |
 | github.com/miekg/dns | v1.1.43 |
 | github.com/yl2chen/cidranger | v1.0.2 |
 | golang.org/x/sys | v0.0.0-20210917161153-d61c044b1678 |
-| golang.zx2c4.com/wireguard | v0.0.0-20210905140043-2ef39d47540c (`tun`, `tun/wintun`) |
+| golang.zx2c4.com/wireguard | v0.0.0-20210905140043-2ef39d47540c |
+| github.com/aiocloud/shadowsocks (socks addr helpers) | replaced by `github.com/shadowsocks/go-shadowsocks2` v0.1.5 `socks` (same helpers) |
 
-## Package map (from Ghidra's Go analysis, 5193 functions)
+## Layout
 
-| Package | Functions | Origin |
-| --- | --- | --- |
-| `core` | 188 | Fork of `github.com/eycorsican/go-tun2socks/core` (MIT): lwIP via cgo (`_Cfunc_tcp_*`, `NewLWIPStack`, `tcpConn`, `udpConn`). Not decompiled here; start from upstream. lwIP C sources are needed too. |
-| `main` | 12 | Netch/AioCloud specific. **Reconstructed in `main.go.recovered`** (not named `.go` so tools do not try to build it). |
-| `proxies` | 6 | Netch specific wrappers that apply the bypass ranger and bind address. Decompiled only. |
-| `proxies/socks` | 15 | SOCKS5 TCP and UDP handlers. Decompiled only. |
-| `adns` | 1 | `adns.Handle`: DNS interception (port 53 is handled separately, see `proxies.udpHandler.ReceiveTo`). Decompiled only. |
-| `tools` | 4 | `CopyBuffer`: bidirectional copy, 0x578 byte buffers, deadlines on finish. Decompiled only. |
-| `structs` | 0 | `ServerInfo{Type, Hostname, Username, Password, Method, Prot, ProtParam, OBFS, OBFSParam}`. Type only, no functions. |
+| Path | Origin |
+| --- | --- |
+| `main.go` | Recovered. The C ABI Netch calls (`tun_dial`, `tun_init`, `tun_free`, `tun_luid`, `tun_getUP`, `tun_getDL`). |
+| `proxies/` | Recovered. TCP: IPv4 targets in the bypass list are dialed directly from the bind address, everything else goes through SOCKS5. UDP: port 53 goes to `adns`. |
+| `proxies/socks/` | Recovered. SOCKS5 CONNECT and UDP ASSOCIATE. |
+| `adns/` | Recovered. PTR queries are answered with `aioCloud`, other queries go to the configured DNS server over TCP or TCP-TLS. |
+| `tools/`, `structs/` | Recovered. |
+| `core/` | `github.com/eycorsican/go-tun2socks/core` (MIT, license in `core/LICENSE`) with lwIP, **plus one fix**: `lwipError.Error()` formats the code with `fmt.Sprintf("error code %d", ...)` as the binary does (upstream uses `string(int)`). Every other `core` function matches the binary's size. |
+| `recovered/decompiled/` | Raw Ghidra pseudo-C that the rewrite was written from. Evidence only, not built. |
 
-## The C ABI (matches `Netch/Interops/tun2socks.cs`)
+Recovered defaults (from the data section): bind address `10.0.0.100`, bypass list `disabled`, DNS `1.1.1.1:53` over `tcp`, MTU 1500.
+Other constants: wintun adapter `aioCloud` with GUID `{14EA48E9-69FA-409F-8752-22563978E802}`; direct dials time out and
+keep alive after 10 s; SOCKS UDP relay replies are dropped after 30 s of silence; relays copy in 0x578 byte chunks.
+Only SOCKS5 server types (`S5`, `Socks`, `Socks5`) are supported.
 
-`tun_dial(name, utf8 value)`, `tun_init()`, `tun_free()`, `tun_luid()`, `tun_getUP()`, `tun_getDL()`.
-`tun_dial` index order equals `NameList` in the C# file (see the constants in `main.go.recovered`).
+## How it was checked
 
-Behaviors worth knowing:
-- The adapter is a wintun adapter named `aioCloud` with the fixed GUID `{14EA48E9-69FA-409F-8752-22563978E802}`.
-- Only SOCKS5 is wired up: server type must be `S5`, `Socks` or `Socks5`, otherwise `tun_init` logs
-  `[tun2socks][proxies.NewHandler] Unknown Type` and fails. The Shadowsocks/SSR dependency is linked but unused by `main`.
-- Bypass list is a file of CIDRs (`#`-free, one per line) loaded into a cidranger trie, or the literal `disabled`.
-- UDP to port 53 is handled in a goroutine through `adns` instead of the SOCKS UDP handler.
-- Up/download counters are plain byte totals behind mutexes.
+Built with the same toolchain and flags as the original (`go1.17.1`, `-buildmode=c-shared -trimpath -asmflags '-s -w'
+-ldflags '-s -w'`, mingw gcc 15.2 for the lwIP C code):
 
-## Not recovered
+```
+go install golang.org/dl/go1.17.1@latest && go1.17.1 download
+set CGO_ENABLED=1 GOOS=windows GOARCH=amd64
+go1.17.1 build -a -buildmode=c-shared -trimpath -asmflags "-s -w" -ldflags "-s -w" -o tun2socks.dll .
+```
 
-- `core` fork differences from upstream go-tun2socks (needs a function-by-function diff).
-- `proxies`, `proxies/socks`, `adns`, `tools`, `structs`: only raw pseudo-C in `recovered/decompiled/`.
-- Exact log strings that are stored in string tables (marked in `main.go.recovered`).
-- `main.tun_luid` body: Ghidra only produced the cgo wrapper.
-- No build was attempted. Verifying equivalence needs Go 1.17 and a mingw cgo toolchain, then a comparison of
-  the exported symbols and the function list against this binary.
+| Check | Result |
+| --- | --- |
+| DLL size | 4,680,192 bytes (original 4,676,608) |
+| Exports | the same six `tun_*` functions, same C types (`GoInt`, `GoUint8*`, `GoUint8`, `GoUint64`) |
+| Functions in the Go function table | 4,547 in common; **4,541 have exactly the same machine code size** |
+| Functions that differ | `main.tun_dial`, `main.tun_init`, `main.tun_free` (written more compactly), `adns.Handle` (shared helper instead of duplicated code), `socks.(*tcpHandler).Handle`, `socks.(*udpHandler).Connect` (a few bytes; logic reviewed against the decompile) |
+| C ABI | A ctypes script calls every export on both DLLs with the same sequence (dial with every field, unknown index, getters, free before init, init without wintun). The outputs are identical. |
+| Unit tests | Go tests with fake SOCKS5 servers and a fake DNS upstream: handshake (no auth, user/pass, auth failure, unknown method), TCP relay, UDP associate round trip, bypass versus proxy routing, IPv6 never bypassed, PTR answer, upstream DNS over TCP |
 
-## Method
+## Not verified
 
-Ghidra 12.1.4 headless + the GhidraMCP server, auto-analysis with the Go analyzer (function names and original
-`file.go:line` come from the pclntab). Raw output is in `recovered/decompiled/`, one file per function.
+- `tun_init` with a real adapter (needs administrator rights and `wintun.dll`), so no traffic has gone through the rewrite.
+- The six functions listed above differ in machine code. Behaviour was compared by reading the decompile and by tests, not by running the
+  original side by side.
+- Differences from the original that are deliberate: `tun_dial` returns false for a server field set before a `TYPE_TCPREST`/`TYPE_UDPREST`
+  (the original would crash with a nil pointer), and `tun_init` returns false if the servers were never described.
+- The `aiocloud/shadowsocks/socks` helpers were replaced by the go-shadowsocks2 equivalents; same wire format, not compared byte for byte.
+- The exact text of three rarely seen log lines was taken from the data section; the SOCKS auth failure message is `authentication failed`.
+
+**Wired in:** `Other/tun2socks/build.ps1` builds the module with Go 1.17.1 into `Other\release\tun2socks.bin`. `Other/build.ps1` runs it with the other `Other/*` tools, and the root `build.ps1` copies `Other\release\*.bin` over the `Storage\tun2socks.bin` it copied first, so the release now ships the rebuilt DLL. CI installs Go 1.17.1 for it (`GO117`). `Storage/tun2socks.bin` stays as the original reference and as a fallback when `Other\release` has no `tun2socks.bin`. To go back to the original, delete `Other/tun2socks/build.ps1`.
 
 ## `Storage/nfdriver.sys` (not recovered, on purpose)
 
-It is the **NetFilter SDK 2 v1.6 WFP driver** by Vitaly Sidorov (PDB path
-`...\nfsdk2_1.6\driver_wfp\...\netfilter2.pdb`, x64, file version 1.6.3.0), a commercial closed-source product
-whose headers in `Redirector/include/` carry "Copyright (C) Vitaly Sidorov, All rights reserved". Its source
-is not available and I did not reconstruct it. The user-mode interface that Netch needs is already documented by the
-vendored `nfdriver.h` / `nfapi.h`. Realistic ways forward are to buy or license the SDK, or to replace Process mode with
-another capture mechanism (for example WinDivert or your own WFP callout driver).
+It is the **NetFilter SDK 2 v1.6 WFP driver** by Vitaly Sidorov (PDB path `...\nfsdk2_1.6\driver_wfp\...\netfilter2.pdb`, x64,
+file version 1.6.3.0), a commercial closed-source product. The headers in `Redirector/include/` carry "Copyright (C) Vitaly Sidorov,
+All rights reserved". Its source is not available and I did not reconstruct it. The user-mode interface Netch needs is already
+documented by the vendored `nfdriver.h` and `nfapi.h`. Realistic ways forward: license the SDK, or replace Process mode with another
+capture mechanism (for example WinDivert or your own WFP callout driver).
