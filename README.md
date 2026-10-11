@@ -140,6 +140,8 @@ Toolchain details are in [.docs/CLAUDE.md](.docs/CLAUDE.md). Release signing is 
 
 ## Problems and ideas
 
+What changed in each version: [CHANGELOG.md](CHANGELOG.md).
+
 Open an [issue](https://github.com/psnwd/netrix/issues) and attach the log from the `logging` folder.
 
 ## Credits
