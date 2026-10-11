@@ -10,7 +10,7 @@ public static class DnsUtils
     private static readonly AsyncSemaphore Lock = new(1);
 
     /// <summary>
-    ///     缓存
+    ///     Cache
     /// </summary>
     private static readonly Hashtable Cache = new();
     private static readonly Hashtable Cache6 = new();

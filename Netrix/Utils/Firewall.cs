@@ -8,7 +8,7 @@ public static class Firewall
     private const string Netrix = "Netrix";
 
     /// <summary>
-    ///     Netrix 自带程序添加防火墙
+    ///     Add firewall rules for Netrix's bundled programs
     /// </summary>
     public static void AddNetrixFwRules()
     {
@@ -39,7 +39,7 @@ public static class Firewall
     }
 
     /// <summary>
-    ///     清除防火墙规则 (Netrix 自带程序)
+    ///     Remove the firewall rules (Netrix's bundled programs)
     /// </summary>
     public static void RemoveNetrixFwRules()
     {
@@ -58,7 +58,7 @@ public static class Firewall
         }
     }
 
-    #region 封装
+    #region Wrappers
 
     private static void AddFwRule(string ruleName, string exeFullPath)
     {

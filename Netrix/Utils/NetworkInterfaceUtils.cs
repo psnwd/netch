@@ -28,7 +28,7 @@ public static class NetworkInterfaceUtils
         }
 
         if (PInvoke.GetBestRoute(BitConverter.ToUInt32(IPAddress.Parse(ipAddress).GetAddressBytes(), 0), 0, out var route) != 0)
-            throw new MessageException("GetBestRoute 搜索失败");
+            throw new MessageException("GetBestRoute found no route");
 
         return Get((int)route.dwForwardIfIndex);
     }

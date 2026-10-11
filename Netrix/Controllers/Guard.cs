@@ -94,7 +94,7 @@ public abstract class Guard
                     case State.Stopped:
                         await StopGuardAsync();
                         OnStartFailed();
-                        throw new MessageException($"{Name} 控制器启动失败");
+                        throw new MessageException($"{Name} controller failed to start");
                 }
 
                 // exited without printing a started or failed keyword: do not wait out the timeout
@@ -102,12 +102,12 @@ public abstract class Guard
                 {
                     await StopGuardAsync();
                     OnStartFailed();
-                    throw new MessageException($"{Name} 控制器启动失败");
+                    throw new MessageException($"{Name} controller failed to start");
                 }
             }
 
             await StopGuardAsync();
-            throw new MessageException($"{Name} 控制器启动超时");
+            throw new MessageException($"{Name} controller start timed out");
         }
     }
 

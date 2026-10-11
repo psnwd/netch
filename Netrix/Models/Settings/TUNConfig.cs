@@ -1,12 +1,12 @@
 ﻿namespace Netrix.Models;
 
 /// <summary>
-///     TUN/TAP 适配器配置类
+///     TUN/TAP adapter settings
 /// </summary>
 public class TUNConfig
 {
     /// <summary>
-    ///     地址
+    ///     Address
     /// </summary>
     public string Address { get; set; } = "10.0.236.10";
 
@@ -16,22 +16,22 @@ public class TUNConfig
     public string DNS { get; set; } = Constants.DefaultPrimaryDNS;
 
     /// <summary>
-    ///     网关
+    ///     Gateway
     /// </summary>
     public string Gateway { get; set; } = "10.0.236.1";
 
     /// <summary>
-    ///     掩码
+    ///     Netmask
     /// </summary>
     public string Netmask { get; set; } = "255.255.255.0";
 
     /// <summary>
-    ///     模式 2 下是否代理 DNS
+    ///     Whether DNS goes through the proxy in mode 2
     /// </summary>
     public bool ProxyDNS { get; set; } = false;
 
     /// <summary>
-    ///     使用自定义 DNS 设置
+    ///     Use custom DNS settings
     /// </summary>
     public bool UseCustomDNS { get; set; } = false;
 

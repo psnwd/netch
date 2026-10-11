@@ -107,11 +107,11 @@ public static class PortHelper
     }
 
     /// <summary>
-    ///     指定类型的端口是否已经被使用了
+    ///     Whether a port of the given type is already in use
     /// </summary>
-    /// <param name="port">端口</param>
-    /// <param name="type">检查端口类型</param>
-    /// <returns>是否被占用</returns>
+    /// <param name="port">Port</param>
+    /// <param name="type">Port type to check</param>
+    /// <returns>Whether it is in use</returns>
     public static void CheckPort(ushort port, PortType type = PortType.Both)
     {
         switch (type)
@@ -151,7 +151,7 @@ public static class PortHelper
     }
 
     /// <summary>
-    ///     检查端口是否是保留端口
+    ///     Check whether a port is reserved
     /// </summary>
     private static void CheckPortReserved(ushort port, PortType type)
     {
@@ -199,7 +199,7 @@ public static class PortHelper
 }
 
 /// <summary>
-///     检查端口类型
+///     Port type to check
 /// </summary>
 [Flags]
 public enum PortType

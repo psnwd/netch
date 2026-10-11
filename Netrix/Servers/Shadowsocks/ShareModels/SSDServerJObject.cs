@@ -4,36 +4,36 @@ namespace Netrix.Servers;
 public class SSDServerJObject
 {
     /// <summary>
-    ///     加密方式
+    ///     Encryption method
     /// </summary>
     public string encryption;
 
     /// <summary>
-    ///     密码
+    ///     Password
     /// </summary>
     public string password;
 
     /// <summary>
-    ///     插件
+    ///     Plugin
     /// </summary>
     public string plugin;
 
     /// <summary>
-    ///     插件参数
+    ///     Plugin parameter
     /// </summary>
     public string plugin_options;
 
     /// <summary>
-    ///     端口
+    ///     Port
     /// </summary>
     public ushort port;
 
     /// <summary>
-    ///     备注
+    ///     Remark
     /// </summary>
     public string remarks;
     /// <summary>
-    ///     服务器地址
+    ///     Server address
     /// </summary>
     public string server;
 }

@@ -7,38 +7,38 @@ namespace Netrix.Models;
 public abstract class Server : ICloneable
 {
     /// <summary>
-    ///     延迟
+    ///     Delay
     /// </summary>
     [JsonIgnore]
     public int Delay { get; private set; } = -1;
 
     /// <summary>
-    ///     组
+    ///     Group
     /// </summary>
     public string Group { get; set; } = Constants.DefaultGroup;
 
     /// <summary>
-    ///     地址
+    ///     Address
     /// </summary>
     public string Hostname { get; set; } = string.Empty;
 
     /// <summary>
-    ///     端口
+    ///     Port
     /// </summary>
     public ushort Port { get; set; }
 
     /// <summary>
-    ///     倍率
+    ///     Rate multiplier
     /// </summary>
     public double Rate { get; } = 1.0;
 
     /// <summary>
-    ///     备注
+    ///     Remark
     /// </summary>
     public string Remark { get; set; } = "";
 
     /// <summary>
-    ///     代理类型
+    ///     Proxy type
     /// </summary>
     [JsonPropertyOrder(int.MinValue)]
     public abstract string Type { get; }
@@ -49,9 +49,9 @@ public abstract class Server : ICloneable
     }
 
     /// <summary>
-    ///     获取备注
+    ///     Get the remark
     /// </summary>
-    /// <returns>备注</returns>
+    /// <returns>Remark</returns>
     public override string ToString()
     {
         var remark = string.IsNullOrWhiteSpace(Remark) ? $"{Hostname}:{Port}" : Remark;
@@ -64,9 +64,9 @@ public abstract class Server : ICloneable
     public abstract string MaskedData();
 
     /// <summary>
-    ///     测试延迟
+    ///     Test the delay
     /// </summary>
-    /// <returns>延迟</returns>
+    /// <returns>Delay</returns>
     public async Task<int> PingAsync()
     {
         try

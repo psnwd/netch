@@ -14,16 +14,16 @@ public static class i18N
     }
 
     /// <summary>
-    ///     数据
+    ///     Data
     /// </summary>
     public static Hashtable Data = new();
 
     public static string LangCode { get; private set; } = "en-US";
 
     /// <summary>
-    ///     加载
+    ///     Load
     /// </summary>
-    /// <param name="value">语言代码</param>
+    /// <param name="value">Language code</param>
     public static void Load(string value)
     {
         string text;
@@ -73,10 +73,10 @@ public static class i18N
     }
 
     /// <summary>
-    ///     翻译
+    ///     Translate
     /// </summary>
-    /// <param name="text">需要翻译的文本</param>
-    /// <returns>翻译完毕的文本</returns>
+    /// <param name="text">Text to translate</param>
+    /// <returns>Translated text</returns>
     public static string Translate(params object[] text)
     {
         var a = new StringBuilder();

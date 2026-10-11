@@ -9,7 +9,7 @@ namespace Netrix.Utils;
 public static class Configuration
 {
     /// <summary>
-    ///     数据目录
+    ///     Data directory
     /// </summary>
     public static string DataDirectoryFullName => Path.Combine(Global.NetrixDir, "data");
 
@@ -91,7 +91,7 @@ public static class Configuration
     }
 
     /// <summary>
-    ///     保存配置
+    ///     Save settings
     /// </summary>
     public static async Task SaveAsync()
     {

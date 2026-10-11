@@ -80,7 +80,7 @@ public static class UpdateChecker
         /*
           Skip(2)
           
-          | 文件名 | SHA256 |
+          | File | SHA256 |
           | :- | :- |
        */
 
@@ -94,7 +94,7 @@ public static class UpdateChecker
         var sb = new StringBuilder();
         foreach (string l in LatestRelease.body.GetLines(false).SkipWhile(l => l.FirstOrDefault() != '#'))
         {
-            if (l.Contains("校验和"))
+            if (l.Contains("Checksums"))
                 break;
 
             sb.AppendLine(l);

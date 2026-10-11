@@ -18,7 +18,7 @@ public struct NetRoute
     public static NetRoute GetBestRouteTemplate()
     {
         if (PInvoke.GetBestRoute(BitConverter.ToUInt32(IPAddress.Parse("114.114.114.114").GetAddressBytes(), 0), 0, out var route) != 0)
-            throw new MessageException("GetBestRoute 搜索失败");
+            throw new MessageException("GetBestRoute found no route");
 
         var gateway = new IPAddress(route.dwForwardNextHop);
         return TemplateBuilder(gateway.ToString(), (int)route.dwForwardIfIndex);

@@ -50,7 +50,7 @@ public partial class SubscriptionForm : Form
     }
 
     /// <summary>
-    ///     选中/取消选中
+    ///     Select / unselect
     /// </summary>
     private void SubscriptionLinkListView_SelectedIndexChanged(object sender, EventArgs e)
     {
@@ -58,7 +58,7 @@ public partial class SubscriptionForm : Form
     }
 
     /// <summary>
-    ///     订阅启/禁用
+    ///     Enable / disable a subscription
     /// </summary>
     private void SubscriptionLinkListView_ItemChecked(object sender, ItemCheckedEventArgs e)
     {

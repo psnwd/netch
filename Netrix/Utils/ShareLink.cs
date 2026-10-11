@@ -127,10 +127,10 @@ public static class ShareLink
     #region Utils
 
     /// <summary>
-    ///     URL 传输安全的 Base64 解码
+    ///     URL-safe Base64 decode
     /// </summary>
-    /// <param name="text">需要解码的字符串</param>
-    /// <returns>解码后的字符串</returns>
+    /// <param name="text">String to decode</param>
+    /// <returns>Decoded string</returns>
     public static string URLSafeBase64Decode(string text)
     {
         return Encoding.UTF8.GetString(
@@ -138,10 +138,10 @@ public static class ShareLink
     }
 
     /// <summary>
-    ///     URL 传输安全的 Base64 加密
+    ///     URL-safe Base64 encode
     /// </summary>
-    /// <param name="text">需要加密的字符串</param>
-    /// <returns>加密后的字符串</returns>
+    /// <param name="text">String to encode</param>
+    /// <returns>Encoded string</returns>
     public static string URLSafeBase64Encode(string text)
     {
         return Convert.ToBase64String(Encoding.UTF8.GetBytes(text)).Replace("+", "-").Replace("/", "_").Replace("=", "");
