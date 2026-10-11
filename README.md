@@ -1,46 +1,58 @@
-<p align="center"><img src="Netrix/Resources/Netrix.png?raw=true" width="128" /></p>
+<p align="center"><img src=".assets/Netrix_BG_Text.png" width="220" alt="Netrix" /></p>
 
 <div align="center">
 
 # Netrix
-A simple proxy client for Windows
+A proxy client for Windows: send one app, the whole PC, or other devices through a proxy server.
+
 </div>
 
-> **Netrix is a modernised fork of [Netch](https://github.com/NetchX/Netch) (1.x) by AmazingDM and contributors.**
-> It keeps the original features and GPLv3 license, and moves the project to current tooling: .NET 10 (x64), rebuildable native components
-> (tun2socks, aiodns, pcap2socks, v2ray-sn, wintun), a safer update path, tests, and performance and telemetry work.
-> See [.docs/PLAN.md](.docs/PLAN.md) and [.docs/TASK.md](.docs/TASK.md) for what changed and what is still open.
-
 ## Features
-Some features may not be implemented yet
 
 ### Modes
-- `ProcessMode` - Use Netfilter driver to intercept process traffic
-- `ShareMode` - Share your network based on WinPcap / Npcap
-- `TunMode` - Use WinTUN driver to create virtual adapter
-- `WebMode` - Set the Windows system proxy (SOCKS5); only apps that honour it are proxied. Restored on stop
+| Mode | What it does |
+|---|---|
+| **Process** | Proxy chosen programs, or everything except chosen programs (NetFilter driver) |
+| **TUN** | Virtual network adapter (WinTUN): the whole PC goes through it, IPv4 and IPv6. Skip IPs and ranges |
+| **Share** | Share the proxy with other devices on your network (Npcap) |
+| **Web** | Set the Windows system proxy; only apps that honour it are proxied. Restored when you stop |
 
 ### Protocols
-- [`Socks5`](https://www.wikiwand.com/en/SOCKS)
-- [`Shadowsocks`](https://shadowsocks.org)
-- [`ShadowsocksR`](https://github.com/shadowsocksrr/shadowsocksr-libev)
-- [`WireGuard`](https://www.wireguard.com)
-- [`Trojan`](https://trojan-gfw.github.io/trojan)
-- [`VMess`](https://www.v2fly.org)
-- [`VLESS`](https://xtls.github.io)
+Shadowsocks, ShadowsocksR, SOCKS5, SSH, Trojan, VMess, VLESS, WireGuard.
+Add servers by hand, from share links on the clipboard, or from a subscription.
 
-### Others
-- UDP NAT FullCone (Limited by your server)
-- .NET 10 x64 (Windows)
+### Also
+- NAT type test and server delay test in the main window
+- Download and upload speed in TUN mode
+- Quick-start profiles: save a server and a mode, start with one click
+- Built-in help and tooltips (Help > Documentation)
+- Signed updates: the app only installs a release signed with the project key
+- UDP FullCone NAT (limited by your server)
+
+## Requirements
+- Windows 10 or 11, x64
+- Run as administrator: TUN and Process modes install drivers and change routes
+- [Npcap](https://npcap.com) for Share mode
+
+## Download
+Get the latest `Netrix.7z` from [Releases](https://github.com/psnwd/netrix/releases), unpack it, and run `Netrix.exe` as administrator.
 
 ## Build
+Needs the .NET 10 SDK, MSBuild with the C++ toolchain, and Go and Rust for the bundled helper programs.
+
 ```powershell
-.\build.ps1        # full build into .\.build (keeps .build\data)
+.\build.ps1                         # full build into .\.build (keeps .build\data)
+.\build.ps1 -PlatformToolset v145   # machine with only Visual Studio 2026
+dotnet test Tests\Tests.csproj -p:Platform=x64
 ```
-See [.docs/CLAUDE.md](.docs/CLAUDE.md) for toolchain notes (Go 1.17.1 / 1.18.10, msbuild, `-PlatformToolset v145`).
+
+Toolchain details are in [.docs/CLAUDE.md](.docs/CLAUDE.md). Release signing is described in [sign.ps1](sign.ps1).
+
+## Problems
+Open an [issue](https://github.com/psnwd/netrix/issues) and attach the log from the `logging` folder next to `Netrix.exe`.
 
 ## Credits
-Netrix is based on [Netch](https://github.com/NetchX/Netch), Copyright (c) 2019 AmazingDM and Contributors. Third-party libraries are listed in [Netrix/NOTICE.txt](Netrix/NOTICE.txt).
+Netrix is based on [Netch](https://github.com/NetchX/Netch), Copyright (c) 2019 AmazingDM and Contributors. Third-party components are listed in [Netrix/NOTICE.txt](Netrix/NOTICE.txt).
 
 ## License
-Netrix is licensed under the [GPLv3](LICENSE) license
+[GPLv3](LICENSE)
