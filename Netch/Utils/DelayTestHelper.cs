@@ -24,7 +24,12 @@ public static class DelayTestHelper
             AutoReset = true
         };
 
-        Timer.Elapsed += (_, _) => PerformTestAsync().Forget();
+        // nobody sees the delays while the window is in the tray or minimized
+        Timer.Elapsed += (_, _) =>
+        {
+            if (Global.MainForm.Visible && Global.MainForm.WindowState != FormWindowState.Minimized)
+                PerformTestAsync().Forget();
+        };
     }
 
     public static bool Enabled

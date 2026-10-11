@@ -36,6 +36,11 @@ public class TUNConfig
     public bool UseCustomDNS { get; set; } = false;
 
     /// <summary>
+    ///     Also send IPv6 traffic through the tunnel; otherwise IPv6 (YouTube, Google, ...) bypasses it
+    /// </summary>
+    public bool ProxyIPv6 { get; set; } = true;
+
+    /// <summary>
     ///     Global bypass IPs
     /// </summary>
     public List<string> BypassIPs { get; set; } = new();

@@ -96,7 +96,7 @@ public static class Program
         i18N.Load(Global.Settings.Language);
 
         // log environment information
-        LogEnvironmentAsync().Forget();
+        LogEnvironment();
         CheckClr();
         CheckOS();
 
@@ -108,17 +108,25 @@ public static class Program
         Application.SetHighDpiMode(HighDpiMode.DpiUnawareGdiScaled);
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
+
+        // creating the form earlier would make SetCompatibleTextRenderingDefault throw
+        Global.MainForm.Shown += (_, _) => LogSlowEnvironmentAsync().Forget();
         Application.Run(Global.MainForm);
     }
 
 #pragma warning restore VSTHRD002
 
-    private static async Task LogEnvironmentAsync()
+    private static void LogEnvironment()
     {
         Log.Information("Netch Version: {Version}", $"{UpdateChecker.Owner}/{UpdateChecker.Repo}@{UpdateChecker.Version}");
         Log.Information("OS: {OSVersion}", Environment.OSVersion);
-        Log.Information("SHA256: {Hash}", $"{await Utils.Utils.Sha256CheckSumAsync(Global.NetchExecutable)}");
         Log.Information("System Language: {Language}", CultureInfo.CurrentCulture.Name);
+    }
+
+    // hashing the whole exe (about 190 MB) and listing drivers and processes wait until the window is up
+    private static async Task LogSlowEnvironmentAsync()
+    {
+        Log.Information("SHA256: {Hash}", $"{await Utils.Utils.Sha256CheckSumAsync(Global.NetchExecutable)}");
 
 #if RELEASE
         if (Log.IsEnabled(LogEventLevel.Debug))

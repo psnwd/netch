@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+using System.ComponentModel;
+using Windows.Win32.NetworkManagement.IpHelper;
+using Windows.Win32.Networking.WinSock;
+using System.Diagnostics;
 using System.Management;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -40,17 +43,23 @@ public static class NetworkInterfaceUtils
         return NetworkInterface.GetAllNetworkInterfaces().First(expression);
     }
 
+    /// <summary>IPv4 interface metric through the IP Helper API (what `netsh interface ip set interface` does); null = automatic.</summary>
     public static void SetInterfaceMetric(int interfaceIndex, int? metric = null)
     {
-        var arguments = $"interface ip set interface {interfaceIndex} ";
-        if (metric != null)
-            arguments += $"metric={metric} ";
+        var row = new MIB_IPINTERFACE_ROW { Family = ADDRESS_FAMILY.AF_INET, InterfaceIndex = (uint)interfaceIndex };
+        var error = PInvoke.GetIpInterfaceEntry(ref row);
+        if (error != 0)
+            throw new Win32Exception((int)error);
 
-        Process.Start(new ProcessStartInfo("netsh.exe", arguments)
-        {
-            UseShellExecute = false,
-            Verb = "runas"
-        })!.WaitForExit();
+        // Set fails on IPv4 rows with a non-zero SitePrefixLength
+        row.SitePrefixLength = 0;
+        row.UseAutomaticMetric = metric == null;
+        if (metric != null)
+            row.Metric = (uint)metric;
+
+        error = PInvoke.SetIpInterfaceEntry(ref row);
+        if (error != 0)
+            throw new Win32Exception((int)error);
     }
 }
 

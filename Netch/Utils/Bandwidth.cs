@@ -45,6 +45,20 @@ public static class Bandwidth
         if (!Flags.IsWindows10Upper)
             return;
 
+        if (MainController.ModeController is TUNController)
+        {
+            // tun2socks counts what really crossed the tunnel (no ETW trace, no PID filter)
+            Global.MainForm.BandwidthState(true);
+
+            while (Global.MainForm.State != State.Stopped)
+            {
+                Thread.Sleep(1000);
+                Global.MainForm.OnBandwidthUpdated(Interops.tun2socks.tun_getDL(), Interops.tun2socks.tun_getUP());
+            }
+
+            return;
+        }
+
         var counterLock = new object();
         //int sent = 0;
 

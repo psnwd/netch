@@ -23,6 +23,9 @@ namespace Netch.Controllers
         private NetRoute _tun;
         private NetRoute _outbound;
 
+        // unique local address for the adapter, only used as the source of the IPv6 default route
+        private const string TunAddressV6 = "fd00:236::10";
+
         public string Name => "tun2socks";
         public string interfaceName => "netch";
 
@@ -46,21 +49,6 @@ namespace Netch.Controllers
 
             _outbound = NetRoute.GetBestRouteTemplate();
             CheckDriver();
-
-            // Wait for adapter to be created
-            for (var i = 0; i < 20; i++)
-            {
-                await Task.Delay(300);
-                try
-                {
-                    _tun.InterfaceIndex = NetworkInterfaceUtils.Get(ni => ni.Name.StartsWith(interfaceName)).GetIndex();
-                    break;
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
 
             Dial(NameList.TYPE_ADAPMTU, "1500");
             Dial(NameList.TYPE_BYPBIND, _outbound.Gateway);
@@ -114,7 +102,30 @@ namespace Netch.Controllers
                 (byte)Utils.Utils.SubnetToCidr(_tunConfig.Netmask),
                 (ulong)tunIndex);
 
+            var routeTimer = System.Diagnostics.Stopwatch.StartNew();
             SetupRouteTable();
+            Log.Information("Route table: {Count} rules in {Ms} ms", _mode.Handle.Count() + _mode.Bypass.Count(), routeTimer.ElapsedMilliseconds);
+            SetupIPv6(tunIndex);
+        }
+
+        /// <summary>
+        ///     Without this IPv6 traffic keeps using the physical adapter and never enters the tunnel
+        /// </summary>
+        private void SetupIPv6(int tunIndex)
+        {
+            // the bypass route for the server is IPv4 only, an IPv6 server would loop back into the tunnel
+            if (!_tunConfig.ProxyIPv6 || _serverRemoteAddress?.AddressFamily == AddressFamily.InterNetworkV6)
+                return;
+
+            if (!RouteHelper.CreateUnicastIP(AddressFamily.InterNetworkV6, TunAddressV6, 64, (ulong)tunIndex))
+            {
+                Log.Warning("Failed to add IPv6 address to the tunnel adapter, IPv6 traffic stays outside the tunnel");
+                return;
+            }
+
+            // empty gateway = on-link, like a VPN adapter without neighbor discovery
+            if (!RouteUtils.CreateRoute(NetRoute.TemplateBuilder(string.Empty, tunIndex).FillTemplate("::", 0), AddressFamily.InterNetworkV6))
+                Log.Warning("Failed to add the IPv6 default route, IPv6 traffic stays outside the tunnel");
         }
 
         public async Task StopAsync()
@@ -133,6 +144,12 @@ namespace Netch.Controllers
         {
             string binDriver = Path.Combine(Global.NetchDir, Constants.WintunDllFile);
             string sysDriver = $@"{Environment.SystemDirectory}\wintun.dll";
+
+            // File.Copy keeps the write time, so same size + time means this file was installed earlier
+            // ponytail: a different file with identical size and time goes undetected; drop the shortcut if that matters
+            FileInfo bin = new(binDriver), sys = new(sysDriver);
+            if (sys.Exists && bin.Length == sys.Length && bin.LastWriteTimeUtc == sys.LastWriteTimeUtc)
+                return;
 
             var binHash = Utils.Utils.Sha256CheckSumAsync(binDriver).Result;
             var sysHash = Utils.Utils.Sha256CheckSumAsync(sysDriver).Result;

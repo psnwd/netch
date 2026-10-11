@@ -1,6 +1,7 @@
 This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under certain conditions.
-Copyright (c) 2019 AmazingDM and Contributors
+Copyright (c) 2019 AmazingDM and Contributors (Netch)
+Netch X is a modernised continuation of Netch (GPLv3), the original project by AmazingDM and Contributors.
 
 Libraries that have been used in Netch are listed below (Not in order):
 Copyright (c) .NET Foundation and Contributors(@dotnet): .NET (MIT)
@@ -23,6 +24,9 @@ Copyright (c) 2018 WireGuard LLC.(@WireGuard): Wintun Network Adapter (GPL-3.0)
 Copyright (c) 2019 xᴊᴀsᴏɴʟʏᴜ(@xjasonlyu): tun2socks (GPL-3.0)
 Copyright (c) 2010 Miek Gieben(@miekg): dns (BSD)
 Copyright (c) 2020 Xie Zhihao(@zhxie): pcap2socks (MIT)
+netifs (Apache-2.0, authored by Manuel Stocker per its Cargo.toml), vendored in Other/pcap2socks
+Copyright (c) 2018 eycorsican: go-tun2socks core with lwIP (MIT), in Other/tun2socks
+go-shadowsocks2 socks (Apache-2.0, github.com/shadowsocks/go-shadowsocks2), used by Other/tun2socks
 Copyright (c) MaxMind, Inc.: GeoLite2 Database (GeoLite2 EULA, CC BY-SA 4.0)
 Copyright (c) 2020 Project X Community(@XTLS): Xray-core (MPL-2.0)
 Copyright (c) 2020 Teddysun(@teddysun): v2ray-plugin (MIT)

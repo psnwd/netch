@@ -9,6 +9,9 @@ CreateUnicastIpAddressEntry
 GetUnicastIpAddressEntry
 NotifyUnicastIpAddressChange
 CancelMibChangeNotify2
+MIB_IPINTERFACE_ROW
+GetIpInterfaceEntry
+SetIpInterfaceEntry
 
 // User32.dll
 SetWindowPos

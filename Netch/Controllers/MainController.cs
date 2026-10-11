@@ -29,8 +29,12 @@ public static class MainController
 
         Log.Information("Start MainController: {Server} {Mode}", $"{server.Type}", $"[{(int)mode.Type}]{mode.i18NRemark}");
 
+        var sw = Stopwatch.StartNew();
+        void Lap(string step) => Log.Information("Start step {Step}: {Ms} ms since click", step, sw.ElapsedMilliseconds);
+
         if (await DnsUtils.LookupAsync(server.Hostname) == null)
             throw new MessageException(i18N.Translate("Lookup Server hostname failed"));
+        Lap("server DNS lookup");
 
         // TODO Disable NAT Type Test setting
         // cache STUN Server ip to prevent "Wrong STUN Server"
@@ -40,6 +44,7 @@ public static class MainController
         Mode = mode;
 
         await Task.WhenAll(Task.Run(NativeMethods.RefreshDNSCache), Task.Run(Firewall.AddNetchFwRules));
+        Lap("DNS cache + firewall rules");
 
         try
         {
@@ -62,6 +67,7 @@ public static class MainController
 
                 TryReleaseTcpPort(ServerController.Socks5LocalPort(), "Socks5");
                 Socks5Server = await ServerController.StartAsync(server);
+                Lap("server controller started");
 
                 StatusPortInfoText.Socks5Port = Socks5Server.Port;
                 StatusPortInfoText.UpdateShareLan();
@@ -71,6 +77,7 @@ public static class MainController
             Global.MainForm.StatusText(i18N.TranslateFormat("Starting {0}", ModeController.Name));
 
             await ModeController.StartAsync(Socks5Server, mode);
+            Lap("mode controller started");
         }
         catch (Exception e)
         {

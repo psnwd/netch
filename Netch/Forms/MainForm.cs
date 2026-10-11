@@ -37,7 +37,7 @@ public partial class MainForm : Form
         #region i18N Translations
 
         if (Flags.NoSupport)
-            _mainFormText.Add(Name, new[] { "{0} ({1})", "Netch", "No Support" });
+            _mainFormText.Add(Name, new[] { "{0} ({1})", UpdateChecker.Name, "No Support" });
 
         _mainFormText.Add(UninstallServiceToolStripMenuItem.Name, new[] { "Uninstall {0}", "NF Service" });
 
@@ -1092,7 +1092,9 @@ public partial class MainForm : Form
         if (IsWaiting())
             return;
 
-        UsedBandwidthLabel.Visible /*= UploadSpeedLabel.Visible*/ = DownloadSpeedLabel.Visible = state;
+        UsedBandwidthLabel.Visible = DownloadSpeedLabel.Visible = state;
+        if (!state)
+            UploadSpeedLabel.Visible = false;
     }
 
     private void UpdateNatTypeStatusLabelText(string? text, string? country = null)
@@ -1366,21 +1368,26 @@ public partial class MainForm : Form
     /// </summary>
     public ulong LastUploadBandwidth;
 
-    public void OnBandwidthUpdated(ulong download)
+    public void OnBandwidthUpdated(ulong download, ulong? upload = null)
     {
         if (InvokeRequired)
         {
-            BeginInvoke(() => OnBandwidthUpdated(download));
+            BeginInvoke(() => OnBandwidthUpdated(download, upload));
             return;
         }
 
         try
         {
             UsedBandwidthLabel.Text = $"{i18N.Translate("Used", ": ")}{Bandwidth.Compute(download)}";
-            //UploadSpeedLabel.Text = $"↑: {Utils.Bandwidth.Compute(upload - LastUploadBandwidth)}/s";
-            DownloadSpeedLabel.Text = $"↑↓: {Bandwidth.Compute(download - LastDownloadBandwidth)}/s";
+            // ETW only sees received bytes, so without an upload value the single label stays "↑↓"
+            DownloadSpeedLabel.Text = $"{(upload is null ? "↑↓" : "↓")}: {Bandwidth.Compute(download - LastDownloadBandwidth)}/s";
+            if (upload is { } up)
+            {
+                UploadSpeedLabel.Visible = true;
+                UploadSpeedLabel.Text = $"↑: {Bandwidth.Compute(up - LastUploadBandwidth)}/s";
+                LastUploadBandwidth = up;
+            }
 
-            //LastUploadBandwidth = upload;
             LastDownloadBandwidth = download;
             Refresh();
         }

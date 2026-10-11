@@ -12,7 +12,7 @@ public static class UpdateChecker
     public const string Owner = @"NetchX";
     public const string Repo = @"Netch";
 
-    public const string Name = @"Netch";
+    public const string Name = @"Netch X";
     public const string Copyright = @"Copyright © 2019 - 2022";
 
     public const string AssemblyVersion = @"1.9.7";

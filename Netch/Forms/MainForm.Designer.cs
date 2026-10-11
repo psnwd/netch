@@ -617,7 +617,7 @@
             // NotifyIcon
             // 
             this.NotifyIcon.ContextMenuStrip = this.NotifyMenu;
-            this.NotifyIcon.Text = "Netch";
+            this.NotifyIcon.Text = "Netch X";
             this.NotifyIcon.Visible = true;
             this.NotifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon_MouseDoubleClick);
             // 
@@ -722,7 +722,7 @@
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Netch";
+            this.Text = "Netch X";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.MenuStrip.ResumeLayout(false);

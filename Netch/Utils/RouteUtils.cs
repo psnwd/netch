@@ -25,9 +25,9 @@ public static class RouteUtils
         return CreateRoute(template.FillTemplate(network, (byte)cidr, metric));
     }
 
-    public static bool CreateRoute(NetRoute o)
+    public static bool CreateRoute(NetRoute o, AddressFamily inet = AddressFamily.InterNetwork)
     {
-        var Result = RouteHelper.CreateRoute(AddressFamily.InterNetwork, o.Network, o.Cidr, o.Gateway, (ulong)o.InterfaceIndex, o.Metric);
+        var Result = RouteHelper.CreateRoute(inet, o.Network, o.Cidr, o.Gateway, (ulong)o.InterfaceIndex, o.Metric);
 
 #if DEBUG_TUN
         Log.Verbose("CreateRoute {InterNetwork} {Address} {Cidr} {Gateway} {Interface} {Metric} Result: {Result}",
