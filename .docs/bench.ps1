@@ -7,6 +7,7 @@ param(
     [string]$SmallUrl = 'https://www.cloudflare.com/cdn-cgi/trace',
     [string]$PingHost = '1.1.1.1',
     [string]$DnsName = 'example.com',
+    [string]$IpFlag = "-4", # IPv6 download hangs through the Trojan server; pass "" to test it
     [int]$Streams = 16,
     [string[]]$Procs = @('Netch', 'v2ray-sn')
 )
@@ -19,7 +20,7 @@ function Get-Mbps([int]$n) {
     $cpu0 = Get-Cpu
     $sw = [Diagnostics.Stopwatch]::StartNew()
     $bytes = 1..$n | ForEach-Object -Parallel {
-        [long](curl.exe -s -o NUL -w '%{size_download}' --max-time 60 $using:Url)
+        [long](curl.exe $using:IpFlag -s -o NUL -w "%{size_download}" --max-time 60 $using:Url)
     } -ThrottleLimit $n | Measure-Object -Sum
     $sw.Stop()
     if (-not $bytes.Sum) { throw "download failed: $Url" }
@@ -34,7 +35,7 @@ $dns = (1..5 | ForEach-Object { (Measure-Command { Resolve-DnsName $DnsName -Dns
 $one = Get-Mbps 1
 $many = Get-Mbps $Streams
 # 40 tiny requests, 8 at a time, each a new connection: shows connection setup cost (what mux and TCP fast open change)
-$small = [math]::Round((Measure-Command { 1..40 | ForEach-Object -Parallel { curl.exe -s -o NUL --max-time 30 $using:SmallUrl } -ThrottleLimit 8 }).TotalMilliseconds)
+$small = [math]::Round((Measure-Command { 1..40 | ForEach-Object -Parallel { curl.exe $using:IpFlag -s -o NUL --max-time 30 $using:SmallUrl } -ThrottleLimit 8 }).TotalMilliseconds)
 
 $perf = Join-Path $PSScriptRoot 'PERF.md'
 if (-not (Test-Path $perf)) {

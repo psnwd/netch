@@ -75,7 +75,7 @@ Phases map to [PLAN.md](PLAN.md). One task per commit/PR.
 ## Update path
 - [x] Rollback: a failed apply restores every `*.old` file (was: half-installed app). Test fails without it
 - [x] Pick the asset whose name matches the hash table (was `assets[0]`); case-insensitive hash compare; delete a download with a wrong hash
-- [ ] Not done: hash and file both come from the same GitHub release, so a compromised release defeats the check. Needs a signature (e.g. minisign/Authenticode) to fix
+- [x] Signature: releases are signed (ECDSA P-256, `sign.ps1`, GitHub secret `UPDATE_SIGNING_KEY`, asset `Netch.7z.sig`); `Updater` flow refuses an unsigned or badly signed release (`UpdateSignature`, 4 tests + sign.ps1 round trip). Setup: add the secret from `update-signing.key`, then tag a release. Until a signed release exists the in-app update refuses and the user installs from the release page
 - [ ] Not done: update runs inside the running process, no helper exe; real update still needs manual QA on Windows
 
 ## Controller tests
@@ -100,6 +100,7 @@ Phases map to [PLAN.md](PLAN.md). One task per commit/PR.
 - [x] `tun2socks.bin` rewrite now writes Go panics and logs to `logging/tun2socks.log` (a GUI process has no console, so they were invisible)
 - [x] TUN mode leaked IPv6 (YouTube over IPv6 never entered the tunnel, "Used" stayed at 700 KB): IPv6 address + `::/0` on-link route added to the adapter, setting `TUNTAP.ProxyIPv6` (default on). Owner reports TUN mode working
 - [ ] Still untested on real traffic: Process mode, Share mode, WebMode, update/rollback, a second launch focusing the first window
+- [x] IPv6 hang on servers without IPv6 egress (found 2026-10-11: curl to an AAAA host stalled through a Trojan server): `TUNController` probes `Socks5ServerTestUtils.IPv6WorksAsync` (5 s cap, CONNECT to Cloudflare IPv6 :80, needs data back). On failure the IPv6 route stays and `tun2socks` rejects IPv6 TCP/UDP (`TYPE_BLOCKIPV6`, `proxies.BlockIPv6`): RST at once, clients fall back to IPv4, no leak. Tests: 2 C# (fake SOCKS5), 1 Go. Not run in the real app
 - [ ] IPv6 follow-ups: LAN-bypass rules are IPv4 only (IPv6 ULA/other local prefixes go into the tunnel), IPv6 DNS from the router bypasses aiodns, an IPv6-only server address disables the IPv6 route
 
 ## Performance and optimization
