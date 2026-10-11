@@ -141,7 +141,7 @@ public class HelpForm : Form
         Text = "Netrix Help";
         Size = new Size(880, 620);
         MinimumSize = new Size(640, 420);
-        StartPosition = FormStartPosition.CenterParent;
+        StartPosition = FormStartPosition.CenterScreen;
         KeyPreview = true;
         KeyDown += (_, e) =>
         {
