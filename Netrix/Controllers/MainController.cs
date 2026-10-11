@@ -119,23 +119,32 @@ public static class MainController
         Log.Information("Stop Main Controller");
         StatusPortInfoText.Reset();
 
-        var tasks = new[]
-        {
-            ServerController?.StopAsync() ?? Task.CompletedTask,
-            ModeController?.StopAsync() ?? Task.CompletedTask
-        };
-
-        try
-        {
-            await Task.WhenAll(tasks);
-        }
-        catch (Exception e)
-        {
-            Log.Error(e, "MainController Stop Error");
-        }
+        // each part stops on its own: a part that throws or hangs (lost network, dead helper process) must not keep the app in "Stopping"
+        await Task.WhenAll(StopPartAsync("server controller", () => ServerController?.StopAsync()),
+            StopPartAsync("mode controller", () => ModeController?.StopAsync()));
 
         ServerController = null;
         ModeController = null;
+    }
+
+    private static readonly TimeSpan StopTimeout = TimeSpan.FromSeconds(15);
+
+    private static async Task StopPartAsync(string name, Func<Task?> stop)
+    {
+        try
+        {
+            // stop() itself may throw before it returns a task
+            if (stop() is { } task)
+                await task.WaitAsync(StopTimeout);
+        }
+        catch (TimeoutException)
+        {
+            Log.Warning("The {Name} did not stop within {Seconds} s, continuing", name, StopTimeout.TotalSeconds);
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "Stopping the {Name} failed", name);
+        }
     }
 
     public static void PortCheck(ushort port, string portName, PortType portType = PortType.Both)

@@ -71,6 +71,16 @@ namespace Tests
         }
 
         [TestMethod]
+        public async Task Guard_StopTwice_DoesNotThrow()
+        {
+            // the user clicks Stop after the helper already died (lost network): the second stop used to throw from its own catch block
+            var g = new FakeGuard(new[] { "READY" }, new string[0]);
+            await g.Start("/c echo READY & ping -n 30 127.0.0.1 >nul");
+            await g.StopAsync();
+            await g.StopAsync();
+        }
+
+        [TestMethod]
         public async Task Guard_FailedKeyword_Throws()
         {
             var g = new FakeGuard(new[] { "READY" }, new[] { "BOOM" });

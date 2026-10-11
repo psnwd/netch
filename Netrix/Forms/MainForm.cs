@@ -1090,10 +1090,27 @@ public partial class MainForm : Form
     private async Task StopCoreAsync()
     {
         State = State.Stopping;
-        _discoveryNatCts?.Cancel();
-        _httpConnectCts?.Cancel();
-        await MainController.StopAsync();
-        State = State.Stopped;
+
+        try
+        {
+            // CancelAsync: Cancel() runs the callbacks of a stuck NAT/HTTP test on this (UI) thread
+            if (_discoveryNatCts is { } nat)
+                await nat.CancelAsync();
+
+            if (_httpConnectCts is { } http)
+                await http.CancelAsync();
+
+            await MainController.StopAsync();
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "Stop failed");
+        }
+        finally
+        {
+            // never stay in "Stopping": the Start button would stay disabled and the window looks frozen
+            State = State.Stopped;
+        }
     }
 
     private bool IsWaiting() => IsWaiting(_state);

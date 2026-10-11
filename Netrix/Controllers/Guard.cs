@@ -149,7 +149,7 @@ public abstract class Guard
         }
         catch (Exception e)
         {
-            Log.Error(e, "Stop {Name} failed", Instance.ProcessName);
+            Log.Error(e, "Stop {Name} failed", Name);
         }
         finally
         {
@@ -159,7 +159,7 @@ public abstract class Guard
             if (_logFileStream != null)
                 await _logFileStream.DisposeAsync();
 
-            Instance.Dispose();
+            Instance?.Dispose();
 
             State = State.Stopped;
         }
