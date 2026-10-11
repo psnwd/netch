@@ -119,7 +119,7 @@ public class Setting
     /// <summary>
     ///     STUN测试服务器
     /// </summary>
-    public string STUN_Server { get; set; } = "stun.syncthing.net";
+    public string STUN_Server { get; set; } = "stun.nextcloud.com";
 
     /// <summary>
     ///     STUN测试服务器

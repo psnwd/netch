@@ -1,5 +1,4 @@
-stun.qq.com
-stun.bige0.com
+stun.nextcloud.com
 stun.miwifi.com
-stun.syncthing.net
-stun.stunprotocol.org
+stun.l.google.com:19302
+stun.cloudflare.com
