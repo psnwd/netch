@@ -30,6 +30,9 @@ public struct SuffixVersion : IComparable, IComparable<SuffixVersion>
         if (value == null)
             throw new ArgumentNullException(nameof(value));
 
+        // tags are often written "v2.0.0"
+        value = value.TrimStart('v', 'V');
+
         var strings = value.Split('-');
 
         var version = Version.Parse(strings[0]);

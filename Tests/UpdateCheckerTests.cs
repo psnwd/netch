@@ -17,6 +17,14 @@ namespace Tests
         }
 
         [TestMethod]
+        public void Tag_with_v_prefix_is_a_version()
+        {
+            Assert.IsTrue(Netrix.Models.GitHubRelease.VersionUtil.CompareVersion("v2.0.1", "2.0.0") > 0);
+            Assert.IsTrue(Netrix.Models.GitHubRelease.VersionUtil.CompareVersion("v2.0.0", "2.0.0") == 0);
+            Assert.IsTrue(Netrix.Models.GitHubRelease.VersionUtil.CompareVersion("2.0.0", "v2.1.0") < 0);
+        }
+
+        [TestMethod]
         public void Picks_highest_version()
         {
             var releases = new List<Release> { new() { tag_name = "2.0.0" }, new() { tag_name = "2.1.0" }, new() { tag_name = "1.9.9" } };
