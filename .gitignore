@@ -5,3 +5,6 @@
 /TestResults
 
 /.build
+
+# release signing key, see sign.ps1
+update-signing.key

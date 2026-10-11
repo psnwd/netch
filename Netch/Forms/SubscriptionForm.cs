@@ -10,6 +10,17 @@ public partial class SubscriptionForm : Form
     public SubscriptionForm()
     {
         InitializeComponent();
+
+        Tips.Create(this,
+            (RemarkLabel, "A name you choose for this subscription."),
+            (RemarkTextBox, "A name you choose for this subscription."),
+            (LinkLabel, "The subscription URL from your provider. Netch downloads the server list from it."),
+            (LinkTextBox, "The subscription URL from your provider. Netch downloads the server list from it."),
+            (UserAgentLabel, "Name Netch sends when downloading. Leave empty unless your provider asks for one."),
+            (UserAgentTextBox, "Name Netch sends when downloading. Leave empty unless your provider asks for one."),
+            (AddButton, "Add this subscription. Then use Subscription > Update Servers in the main menu to download its servers."),
+            (UnselectButton, "Clear the selection."),
+            (SubscriptionLinkListView, "Your subscriptions. Tick the ones to update. Right-click for more."));
         Icon = Resources.icon;
 
         i18N.TranslateForm(this);

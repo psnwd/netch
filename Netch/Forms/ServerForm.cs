@@ -313,7 +313,7 @@ public abstract class ServerForm : Form
         AutoSizeMode = AutoSizeMode.GrowAndShrink;
         ClientSize = new Size(444, 137);
         Controls.Add(ConfigurationGroupBox);
-        Font = new Font("微软雅黑", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+        Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
         FormBorderStyle = FormBorderStyle.FixedSingle;
         Icon = Icon.FromHandle(Resources.Netch.GetHicon());
         Margin = new Padding(3, 4, 3, 4);

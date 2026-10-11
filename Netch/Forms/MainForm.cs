@@ -26,11 +26,35 @@ public partial class MainForm : Form
     private readonly Dictionary<string, object> _mainFormText = new();
 
     private bool _textRecorded;
+    private readonly ToolTip _tips;
 
     public MainForm()
     {
         InitializeComponent();
         NotifyIcon.Icon = Icon = Resources.icon;
+
+        _tips = Tips.Create(this,
+            (EditServerPictureBox, "Edit the selected server"),
+            (DeleteServerPictureBox, "Delete the selected server"),
+            (SpeedPictureBox, "Test the delay (ping) of all servers"),
+            (CopyLinkPictureBox, "Copy the share link of the selected server"),
+            (EditModePictureBox, "Edit the selected mode"),
+            (DeleteModePictureBox, "Delete the selected mode"),
+            (ServerLabel, "The proxy server your traffic goes through. Add servers from the Server menu."),
+            (ServerComboBox, "The proxy server your traffic goes through. Add servers from the Server menu.\nThe number is its delay in ms: lower is faster."),
+            (ModeLabel, "What gets proxied. Add or edit modes from the Mode menu."),
+            (ModeComboBox, "What gets proxied:\nProcess = chosen apps\nTUN = the whole PC\nShare = other devices on your network\nWeb = the Windows system proxy"),
+            (ProfileLabel, "Name for a quick-start profile."),
+            (ProfileNameText, "Name for a quick-start profile.\nType a name, pick a server and a mode, then Ctrl+Click a profile button to save."),
+            (ControlButton, "Start or stop the proxy. Netch needs to run as administrator."),
+            (SettingsButton, "Open the settings"));
+        Tips.Set("Download speed", DownloadSpeedLabel);
+        Tips.Set("Upload speed", UploadSpeedLabel);
+        Tips.Set("Data used since you pressed Start", UsedBandwidthLabel);
+        Tips.Set("Delay of a web request through the proxy", HttpStatusLabel);
+        Tips.Set("NAT type through the proxy: 1 open, 2 restricted, 3 symmetric (hard for games). Click to test again.", NatTypeStatusLabel, NatTypeStatusLightLabel);
+        Tips.Set("A new version is available. Click to update.", NewVersionLabel);
+        Tips.Set("Netch version. Click to open the releases page.", VersionLabel);
 
         AddAddServerToolStripMenuItems();
 
@@ -478,6 +502,17 @@ public partial class MainForm : Form
                 }
             }
 
+            // the hash comes from the same release as the file: also require the signature made with the key that is not on GitHub
+            var signatureUrl = UpdateChecker.LatestRelease.assets.FirstOrDefault(a => a.name == updateFileName + ".sig")?.browser_download_url ??
+                               throw new MessageException(i18N.Translate("The release is not signed, so Netch will not install it. Download it from the release page."));
+
+            var (_, signature) = await WebUtil.DownloadStringAsync(WebUtil.CreateRequest(signatureUrl));
+            if (!UpdateSignature.Verify(updateFileFullName, signature))
+            {
+                File.Delete(updateFileFullName);
+                throw new MessageException(i18N.Translate("The update has an invalid signature and was not installed"));
+            }
+
             await StopAsync();
             await Configuration.SaveAsync();
 
@@ -510,6 +545,11 @@ public partial class MainForm : Form
         Hide();
         new AboutForm().ShowDialog();
         Show();
+    }
+
+    private void DocumentationToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        new HelpForm().ShowDialog(this);
     }
 
     private void fAQToolStripMenuItem_Click(object sender, EventArgs e)
@@ -867,6 +907,7 @@ public partial class MainForm : Form
                 };
 
                 b.Click += ProfileButton_Click;
+                _tips.SetToolTip(b, i18N.Translate("Quick-start profile\nClick: use the saved server and mode, and start\nCtrl+Click: save the current server and mode here\nShift+Click: delete"));
                 ProfileTable.Controls.Add(b, i % columnCount, i / columnCount);
             }
 

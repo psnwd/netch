@@ -91,6 +91,14 @@ namespace Netch.Controllers
 
             #endregion
 
+            // IPv6 enters the tunnel (SetupIPv6). A server without IPv6 egress accepts those connections and then stalls, so
+            // dual-stack sites hang: have tun2socks reject them instead, clients fall back to IPv4 at once and nothing leaks
+            var blockIPv6 = ProxyIPv6Routed && !await Socks5ServerTestUtils.IPv6WorksAsync(server);
+            if (blockIPv6)
+                Log.Warning("The server has no working IPv6 path, IPv6 connections are rejected so clients use IPv4");
+
+            Dial(NameList.TYPE_BLOCKIPV6, blockIPv6 ? "1" : "0");
+
             if (!Init())
                 throw new MessageException("tun2socks start failed.");
 
@@ -108,13 +116,15 @@ namespace Netch.Controllers
             SetupIPv6(tunIndex);
         }
 
+        // the bypass route for the server is IPv4 only, an IPv6 server would loop back into the tunnel
+        private bool ProxyIPv6Routed => _tunConfig.ProxyIPv6 && _serverRemoteAddress?.AddressFamily != AddressFamily.InterNetworkV6;
+
         /// <summary>
         ///     Without this IPv6 traffic keeps using the physical adapter and never enters the tunnel
         /// </summary>
         private void SetupIPv6(int tunIndex)
         {
-            // the bypass route for the server is IPv4 only, an IPv6 server would loop back into the tunnel
-            if (!_tunConfig.ProxyIPv6 || _serverRemoteAddress?.AddressFamily == AddressFamily.InterNetworkV6)
+            if (!ProxyIPv6Routed)
                 return;
 
             if (!RouteHelper.CreateUnicastIP(AddressFamily.InterNetworkV6, TunAddressV6, 64, (ulong)tunIndex))

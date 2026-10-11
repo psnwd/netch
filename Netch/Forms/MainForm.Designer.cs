@@ -48,6 +48,7 @@
             this.HelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CheckForUpdateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FAQToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.DocumentationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ForceExitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.AboutToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.NewVersionLabel = new System.Windows.Forms.ToolStripLabel();
@@ -249,6 +250,7 @@
             // 
             this.HelpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.CheckForUpdateToolStripMenuItem,
+            this.DocumentationToolStripMenuItem,
             this.FAQToolStripMenuItem});
             this.HelpToolStripMenuItem.Margin = new System.Windows.Forms.Padding(0, 0, 0, 1);
             this.HelpToolStripMenuItem.Name = "HelpToolStripMenuItem";
@@ -262,6 +264,13 @@
             this.CheckForUpdateToolStripMenuItem.Text = "Check for update";
             this.CheckForUpdateToolStripMenuItem.Click += new System.EventHandler(this.CheckForUpdatesToolStripMenuItem_Click);
             // 
+            // DocumentationToolStripMenuItem
+            //
+            this.DocumentationToolStripMenuItem.Name = "DocumentationToolStripMenuItem";
+            this.DocumentationToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.DocumentationToolStripMenuItem.Text = "Documentation";
+            this.DocumentationToolStripMenuItem.Click += new System.EventHandler(this.DocumentationToolStripMenuItem_Click);
+            //
             // FAQToolStripMenuItem
             // 
             this.FAQToolStripMenuItem.Name = "FAQToolStripMenuItem";
@@ -716,7 +725,7 @@
             this.Controls.Add(this.MenuStrip);
             this.Controls.Add(this.StatusStrip);
             this.Controls.Add(this.flowLayoutPanel1);
-            this.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.MaximizeBox = false;
@@ -806,6 +815,7 @@
         private System.Windows.Forms.ToolStripStatusLabel NatTypeStatusLightLabel;
         private System.Windows.Forms.ToolStripStatusLabel blankToolStripStatusLabel;
         private System.Windows.Forms.ToolStripMenuItem FAQToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem DocumentationToolStripMenuItem;
 
         #endregion
 

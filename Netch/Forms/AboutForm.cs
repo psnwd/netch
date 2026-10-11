@@ -10,6 +10,12 @@ public partial class AboutForm : Form
     {
         InitializeComponent();
         Icon = Resources.icon;
+        KeyPreview = true;
+        KeyDown += (_, e) =>
+        {
+            if (e.KeyCode == Keys.Escape)
+                Close();
+        };
     }
 
     private void AboutForm_Load(object sender, EventArgs e)

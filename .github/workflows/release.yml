@@ -110,6 +110,13 @@ jobs:
           7z a -mx9 Netch.7z release
           7z rn Netch.7z release Netch
 
+      - name: Sign
+        shell: pwsh
+        env:
+          UPDATE_SIGNING_KEY: ${{ secrets.UPDATE_SIGNING_KEY }}
+        run: |
+          .\sign.ps1 -File Netch.7z
+
       - name: Checksum
         shell: pwsh
         run: |
@@ -125,6 +132,7 @@ jobs:
           draft: false
           files: |
             Netch.7z
+            Netch.7z.sig
           body: |
             [![](https://img.shields.io/badge/Telegram-Channel-blue)](https://t.me/netch_channel) [![](https://img.shields.io/badge/Telegram-Group-green)](https://t.me/netch_group)
             ## Changelogs

@@ -32,7 +32,8 @@ namespace Netch.Interops
             TYPE_UDPPROT,
             TYPE_UDPPRPA,
             TYPE_UDPOBFS,
-            TYPE_UDPOBPA
+            TYPE_UDPOBPA,
+            TYPE_BLOCKIPV6
         }
 
         public static bool Dial(NameList name, string value)

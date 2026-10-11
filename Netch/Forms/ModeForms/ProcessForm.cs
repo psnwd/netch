@@ -37,6 +37,35 @@ public partial class ProcessForm : BindingForm
         }
 
         InitializeComponent();
+
+        Tips.Create(this,
+            (RemarkLabel, "Name of this mode as shown in the mode list."),
+            (RemarkTextBox, "Name of this mode as shown in the mode list."),
+            (FilenameLabel, "File the mode is saved in, inside the mode folder."),
+            (FilenameTextBox, "File the mode is saved in, inside the mode folder."),
+            (HandleLabel, "Programs that go through the proxy. One rule per line. A rule is a regular expression matched on the program path, e.g. chrome.exe"),
+            (HandleRuleRichTextBox, "Programs that go through the proxy. One rule per line. A rule is a regular expression matched on the program path, e.g. chrome.exe"),
+            (BypassLabel, "Programs that never go through the proxy, even if a Handle rule matches. One rule per line."),
+            (BypassRuleRichTextBox, "Programs that never go through the proxy, even if a Handle rule matches. One rule per line."),
+            (HandleSelectButton, "Choose a folder: adds a rule for every program inside it."),
+            (BypassSelectButton, "Choose a folder: adds a rule for every program inside it."),
+            (HandleScanButton, "Choose a folder: lists the .exe files inside it as rules (up to 50)."),
+            (BypassScanButton, "Choose a folder: lists the .exe files inside it as rules (up to 50)."),
+            (ValidationButton, "Check that the Bypass rules are valid."),
+            (HandleTCPCheckBox, "Send the TCP traffic of these programs through the proxy (web, most apps)."),
+            (HandleUDPCheckBox, "Send the UDP traffic of these programs through the proxy (games, voice). The server must support UDP."),
+            (HandleICMPCheckBox, "Also handle ping (ICMP)."),
+            (ICMPDelayLabel, "Delay added to ping replies in milliseconds."),
+            (ICMPDelayTextBox, "Delay added to ping replies in milliseconds."),
+            (HandleDNSCheckBox, "Redirect the DNS lookups of these programs to the DNS server below."),
+            (DNSLabel, "DNS server used when DNS handling is on, as address:port, e.g. 1.1.1.1:53."),
+            (DNSTextBox, "DNS server used when DNS handling is on, as address:port, e.g. 1.1.1.1:53."),
+            (HandleProcDNSCheckBox, "Only redirect DNS lookups made by the handled programs."),
+            (ProxyDNSCheckBox, "Send the DNS lookups through the proxy."),
+            (HandleLoopbackCheckBox, "Also handle traffic to this PC itself (127.0.0.1)."),
+            (HandleLANCheckBox, "Also handle traffic to your local network. Off = LAN traffic stays direct."),
+            (HandleChildProcCheckBox, "Also handle programs started by these programs."),
+            (ControlButton, "Save the mode."));
         Icon = Resources.icon;
         InitBindings();
 

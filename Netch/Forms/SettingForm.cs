@@ -12,6 +12,74 @@ public partial class SettingForm : BindingForm
         InitializeComponent();
         Icon = Resources.icon;
         i18N.TranslateForm(this);
+        AcceptButton = ControlButton;
+        Tips.Create(this,
+            // General
+            (Socks5PortLabel, "Port of the local SOCKS5 proxy that Netch opens on this PC."),
+            (Socks5PortTextBox, "Port of the local SOCKS5 proxy that Netch opens on this PC."),
+            (AllowDevicesCheckBox, "Let other devices on your network use this PC's proxy.\nOff = only this PC (safer)."),
+            (ServerPingTypeLabel, "How the server delay is measured."),
+            (ICMPingRadioBtn, "Ping with ICMP. Some servers and firewalls block it."),
+            (TCPingRadioBtn, "Connect with TCP to the server port. Works almost everywhere (recommended)."),
+            (ProfileCountLabel, "How many quick-start profile buttons to show on the main window. 0 hides them."),
+            (ProfileCountTextBox, "How many quick-start profile buttons to show on the main window. 0 hides them."),
+            (DetectionTickLabel, "Test the delay of all servers every N seconds while Netch is open. 0 turns it off."),
+            (DetectionTickTextBox, "Test the delay of all servers every N seconds while Netch is open. 0 turns it off."),
+            (StartedPingLabel, "After you press Start, wait N seconds, then test the delay once. -1 turns it off."),
+            (StartedPingIntervalTextBox, "After you press Start, wait N seconds, then test the delay once. -1 turns it off."),
+            (STUNServerLabel, "Server used for the NAT type test in the status bar. It must support RFC 5780, e.g. stun.1und1.de."),
+            (STUN_ServerComboBox, "Server used for the NAT type test in the status bar. It must support RFC 5780, e.g. stun.1und1.de."),
+            (LanguageLabel, "Language of the Netch interface."),
+            (LanguageComboBox, "Language of the Netch interface."),
+            // Process mode
+            (FilterTCPCheckBox, "Send the TCP traffic of chosen programs through the proxy (web, most apps)."),
+            (FilterUDPCheckBox, "Send the UDP traffic of chosen programs through the proxy (games, voice, QUIC). The server must support UDP."),
+            (FilterICMPCheckBox, "Also handle ping (ICMP) of chosen programs."),
+            (ICMPDelayLabel, "Delay added to ping replies in milliseconds."),
+            (ICMPDelayTextBox, "Delay added to ping replies in milliseconds."),
+            (FilterDNSCheckBox, "Redirect the DNS lookups of chosen programs to the DNS server below, so names resolve correctly through the proxy."),
+            (DNSHijackLabel, "DNS server used when DNS handling is on."),
+            (DNSHijackHostTextBox, "DNS server used when DNS handling is on, as address:port, e.g. 1.1.1.1:53."),
+            (HandleProcDNSCheckBox, "Only redirect DNS lookups made by the chosen programs. Off = every program's DNS."),
+            (DNSProxyCheckBox, "Send the DNS lookups through the proxy server instead of straight out."),
+            (ChildProcessHandleCheckBox, "Also handle programs started by the chosen programs."),
+            // TUN
+            (TUNTAPAddressLabel, "IP address of the virtual network adapter. Change only if it clashes with your network."),
+            (TUNTAPAddressTextBox, "IP address of the virtual network adapter. Change only if it clashes with your network."),
+            (TUNTAPNetmaskLabel, "Netmask of the virtual adapter."),
+            (TUNTAPNetmaskTextBox, "Netmask of the virtual adapter."),
+            (TUNTAPGatewayLabel, "Gateway of the virtual adapter. Normally the first address of its network."),
+            (TUNTAPGatewayTextBox, "Gateway of the virtual adapter. Normally the first address of its network."),
+            (UseCustomDNSCheckBox, "Use the DNS server below instead of Netch's own DNS (AioDNS)."),
+            (TUNTAPDNSLabel, "DNS server used when custom DNS is on."),
+            (TUNTAPDNSTextBox, "DNS server used when custom DNS is on."),
+            (ProxyDNSCheckBox, "Send the custom DNS lookups through the proxy."),
+            (GlobalBypassIPsButton, "IP addresses and ranges that never go through the proxy in any TUN mode, e.g. 192.168.1.0/24."),
+            // V2Ray
+            (XrayConeCheckBox, "Full cone NAT for UDP (better for games). The server must run Xray-core 1.3.0 or newer."),
+            (TLSAllowInsecureCheckBox, "Accept invalid or self-signed TLS certificates. Less safe: only turn on if you trust the server."),
+            (UseMuxCheckBox, "Share one connection for many requests. Starts connections faster, but can lower single-download speed."),
+            (TCPFastOpenBox, "Send data with the TCP handshake to save a round trip. Needs support on both ends."),
+            (KCPGroupBox, "Advanced mKCP transport options. Leave as they are unless your server tells you otherwise."),
+            // Others
+            (ExitWhenClosedCheckBox, "Closing the window quits Netch. Off = it keeps running in the tray."),
+            (StopWhenExitedCheckBox, "Stop the proxy when Netch quits."),
+            (StartWhenOpenedCheckBox, "Start the proxy automatically when Netch opens, using the selected server and mode."),
+            (MinimizeWhenStartedCheckBox, "Hide the window to the tray after the proxy starts."),
+            (RunAtStartupCheckBox, "Start Netch when you sign in to Windows."),
+            (CheckUpdateWhenOpenedCheckBox, "Look for a new version each time Netch opens."),
+            (NoSupportDialogCheckBox, "Hide the support warning dialog."),
+            (CheckBetaUpdateCheckBox, "Also offer pre-release versions when checking for updates."),
+            (UpdateServersWhenOpenedCheckBox, "Refresh your subscriptions each time Netch opens."),
+            // AioDNS
+            (ChinaDNSLabel, "DNS server for domestic (China) lookups. Format: tcp://223.5.5.5:53 or tls://host:853."),
+            (ChinaDNSTextBox, "DNS server for domestic (China) lookups. Format: tcp://223.5.5.5:53 or tls://host:853."),
+            (OtherDNSLabel, "DNS server for all other lookups. Format: tcp://1.1.1.1:53 or tls://host:853."),
+            (OtherDNSTextBox, "DNS server for all other lookups. Format: tcp://1.1.1.1:53 or tls://host:853."),
+            (AioDNSListenPortLabel, "Local port of Netch's own DNS service. Change only if 53 or this port is taken."),
+            (AioDNSListenPortTextBox, "Local port of Netch's own DNS service. Change only if this port is taken."),
+            // Save
+            (ControlButton, "Save the settings (Enter)."));
 
         #region General
 

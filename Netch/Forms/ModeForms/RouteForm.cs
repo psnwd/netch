@@ -30,6 +30,21 @@ public partial class RouteForm : BindingForm
         }
 
         InitializeComponent();
+
+        Tips.Create(this,
+            (RemarkLabel, "Name of this mode as shown in the mode list."),
+            (RemarkTextBox, "Name of this mode as shown in the mode list."),
+            (FilenameLabel, "File the mode is saved in, inside the mode folder."),
+            (FilenameTextBox, "File the mode is saved in, inside the mode folder."),
+            (HandleLabel, "IP addresses and ranges that go through the proxy. One per line, e.g. 8.8.8.8 or 1.2.3.0/24."),
+            (HandleRuleRichTextBox, "IP addresses and ranges that go through the proxy. One per line, e.g. 8.8.8.8 or 1.2.3.0/24."),
+            (BypassLabel, "IP addresses and ranges that never go through the proxy. One per line, e.g. 192.168.0.0/16."),
+            (BypassRuleRichTextBox, "IP addresses and ranges that never go through the proxy. One per line, e.g. 192.168.0.0/16."),
+            (HandleDNSCheckBox, "Send DNS lookups through the proxy too."),
+            (UseCustomDNSCheckBox, "Use the DNS server below for this mode."),
+            (DNSLabel, "DNS server for this mode."),
+            (DNSTextBox, "DNS server for this mode."),
+            (ControlButton, "Save the mode."));
         Icon = Resources.icon;
 
 
