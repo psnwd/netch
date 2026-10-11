@@ -15,7 +15,7 @@ public static class UpdateChecker
     public const string Name = @"Netrix";
     public const string Copyright = @"Copyright © 2019 AmazingDM and Contributors; Netrix changes © 2026 psnwd";
 
-    public const string AssemblyVersion = @"1.9.7";
+    public const string AssemblyVersion = @"2.0.0";
     private const string Suffix = @"";
 
     public static readonly string Version = $"{AssemblyVersion}{(string.IsNullOrEmpty(Suffix) ? "" : $"-{Suffix}")}";

@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Netrix 1.x: Windows proxy client (WinForms, .NET 10, x64 only). Needs admin at runtime (see `Netrix/App.manifest`). GPLv3.
+Netrix 2.0: Windows proxy client (WinForms, .NET 10, x64 only). Needs admin at runtime (see `Netrix/App.manifest`). GPLv3.
 
 ## Layout
 

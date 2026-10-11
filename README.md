@@ -12,7 +12,7 @@ A simple proxy client for Windows
 > See [.docs/PLAN.md](.docs/PLAN.md) and [.docs/TASK.md](.docs/TASK.md) for what changed and what is still open.
 
 ## Features
-Some features may not be implemented in version 1
+Some features may not be implemented yet
 
 ### Modes
 - `ProcessMode` - Use Netfilter driver to intercept process traffic
