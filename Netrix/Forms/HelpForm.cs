@@ -57,7 +57,7 @@ public class HelpForm : Form
             "- Use a TUN mode and add the address to its Bypass list, or to Settings > TUN tab > Global Bypass IPs.",
             "# IPv6",
             "- If the server has no IPv6, Netrix rejects IPv6 connections so apps fall back to IPv4 at once.",
-            "- Turn IPv6 handling off with TUNTAP.ProxyIPv6 in data\\settings if you do not want IPv6 in the tunnel."
+            "- To keep IPv6 out of the tunnel, set ProxyIPv6 to false in the TUNTAP section of data\\settings.json."
         }),
         ("Status bar", new[]
         {
