@@ -12,7 +12,6 @@ Netrix 2.0: Windows proxy client (WinForms, .NET 10, x64 only). Needs admin at r
   - `Utils/`, `Services/`, `Forms/`, `Models/Settings/` — helpers, services, UI, config.
 - `Redirector/` — C++ (vcxproj) Netfilter-based process redirector → `nfapi.dll`, `Redirector.bin`.
 - `RouteHelper/` — C++ (vcxproj) route table helper → `RouteHelper.bin`.
-- `RedirectorTester/` — C# test harness for Redirector.
 - `Other/` — third-party deps built from source (aiodns, pcap2socks, v2ray-sn, wintun); each has own `build.ps1`; `Other/build.ps1` runs all.
 - `Storage/` — runtime assets copied into release: `i18n/`, `mode/`, `stun.txt`, `nfdriver.sys`, `aiodns.conf`, prebuilt `tun2socks.bin`.
 - `Tests/` — MSTest project (net10.0-windows): share-link and mode/setting JSON round-trips. Run `dotnet test Tests\Tests.csproj -p:Platform=x64`.

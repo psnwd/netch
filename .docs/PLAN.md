@@ -5,7 +5,7 @@ Goal: move off EOL .NET 6, refresh deps and bundled binaries, make CI/build reli
 See [ARCHITECTURE.md](ARCHITECTURE.md), [TASK.md](TASK.md), [QA.md](QA.md), [RISKS.md](RISKS.md).
 
 ## Why
-- `net6.0-windows` EOL since Nov 2024; `Tests` still on `net5.0`; `RedirectorTester` on .NET Framework 4.8.
+- `net6.0-windows` EOL since Nov 2024; `Tests` still on `net5.0`.
 - GitHub Actions pinned to old majors (`upload-artifact@v3`, `cache@v3`, `checkout@v3`, `setup-go@v3`, `actions-rs/toolchain@v1` unmaintained).
 - Pre-release package (`CsWin32 0.1.588-beta`); `Stun.Net`, `WindowsJobAPI` possibly stale.
 - Bundled binaries (`tun2socks.bin`, `nfdriver.sys`, xray/v2ray, wintun) likely behind upstream.

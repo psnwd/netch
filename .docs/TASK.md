@@ -14,7 +14,7 @@ Phases map to [PLAN.md](PLAN.md). One task per commit/PR.
 ## P2 Framework
 - [x] `common.props`, `Netrix.csproj`: `net10.0-windows`
 - [x] `Tests.csproj`: same TFM (MSTest/Test.Sdk versions bump in P3)
-- [ ] `RedirectorTester`: port to SDK-style or delete if unused
+- [x] `RedirectorTester` deleted (unused .NET Framework 4.8 harness, never run in CI); `Other/_Archive` (dead build scripts of removed components) deleted
 - [x] Fix build errors/analyzer warnings: WFO1000 on `SyncGlobalCheckBox` (DesignerSerializationVisibility.Hidden)
 - [x] `global.json`: `rollForward: latestFeature`
 - [ ] Verify single-file self-contained publish runs on clean Win10/11 VM (publish succeeds locally: 190MB Netrix.exe; runtime launch untested)
@@ -30,7 +30,7 @@ Phases map to [PLAN.md](PLAN.md). One task per commit/PR.
 - [ ] Dependabot: add grouping to cut PR noise
 
 ## P4 Native + binaries
-- [x] Redirector/RouteHelper rebuild: builds in CI (run 38080196958, windows-2022). RedirectorTester not run (needs driver + admin)
+- [x] Redirector/RouteHelper rebuild: builds in CI (run 38080196958, windows-2022).
 - [x] `Other/aiodns`: go 1.25.0, miekg/dns 1.1.73; c-shared build verified locally. Runtime check in QA (DNS section)
 - [x] `Other/*` build in CI. `Other/pcap2socks` v0.6.2, `wintun` 0.13, `v2ray-sn` v5.0.16: URLs still resolve (HTTP 200). Version bumps not done (need Windows runtime testing). v2ray-sn needed Go 1.18 (SagerNet gVisor fork) and clash pinned to v1.11.0 (newest clash needs Go 1.20); both fixed in CI
 - [x] `Storage/tun2socks.bin`, `nfdriver.sys`: documented. tun2socks.bin is a Netrix-specific c-shared build (go1.17.1), not an upstream exe; patch source not in repo, cannot refresh. nfdriver.sys 1.6.3.0 tied to Redirector
