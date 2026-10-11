@@ -126,3 +126,27 @@ func TestUDPNonDNSGoesToProxy(t *testing.T) {
 		t.Fatalf("connect=%d receive=%d", proxy.connect, proxy.receive)
 	}
 }
+
+func TestBlockIPv6(t *testing.T) {
+	BlockIPv6 = true
+	t.Cleanup(func() { BlockIPv6 = false })
+
+	tcp, udp := &recordTCP{}, &recordUDP{}
+	v6, v4 := net.ParseIP("2606:4700::1111"), net.ParseIP("1.1.1.1")
+
+	if err := NewTCPHandler(tcp, nil, nil).Handle(nil, &net.TCPAddr{IP: v6, Port: 80}); err == nil || tcp.called {
+		t.Fatal("IPv6 TCP must be rejected before reaching the server")
+	}
+
+	if err := NewTCPHandler(tcp, nil, nil).Handle(nil, &net.TCPAddr{IP: v4, Port: 80}); err != nil || !tcp.called {
+		t.Fatal("IPv4 TCP must pass")
+	}
+
+	if err := NewUDPHandler(udp).Connect(nil, &net.UDPAddr{IP: v6, Port: 443}); err == nil || udp.connect != 0 {
+		t.Fatal("IPv6 UDP must be rejected")
+	}
+
+	if err := NewUDPHandler(udp).Connect(nil, nil); err != nil || udp.connect != 1 {
+		t.Fatal("UDP with no target yet must pass")
+	}
+}

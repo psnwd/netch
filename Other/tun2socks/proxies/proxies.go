@@ -1,6 +1,7 @@
 package proxies
 
 import (
+	"errors"
 	"net"
 	"time"
 
@@ -12,6 +13,12 @@ import (
 )
 
 const dialTimeout = 10 * time.Second
+
+// BlockIPv6 rejects every IPv6 connection: used when the server has no IPv6 egress, so clients fall back to IPv4
+// at once instead of hanging on a connection the server can never open.
+var BlockIPv6 bool
+
+var errBlockedIPv6 = errors.New("IPv6 blocked: the server has no IPv6 path")
 
 type tcpHandler struct {
 	h      core.TCPConnHandler
@@ -26,6 +33,10 @@ func NewTCPHandler(h core.TCPConnHandler, binder *net.TCPAddr, ranger cidranger.
 }
 
 func (h *tcpHandler) Handle(conn net.Conn, target *net.TCPAddr) error {
+	if BlockIPv6 && target.IP.To4() == nil {
+		return errBlockedIPv6
+	}
+
 	if h.ranger != nil {
 		if ip := target.IP.To4(); ip != nil {
 			bypass, err := h.ranger.Contains(ip)
@@ -61,6 +72,10 @@ func NewUDPHandler(h core.UDPConnHandler) core.UDPConnHandler {
 }
 
 func (h *udpHandler) Connect(conn core.UDPConn, target *net.UDPAddr) error {
+	if BlockIPv6 && target != nil && target.IP.To4() == nil {
+		return errBlockedIPv6
+	}
+
 	return h.h.Connect(conn, target)
 }
 

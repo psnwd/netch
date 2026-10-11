@@ -54,6 +54,7 @@ const (
 	typeUDPProtocolParam
 	typeUDPOBFS
 	typeUDPOBFSParam
+	typeBlockIPv6 // "1": reject IPv6 connections so clients fall back to IPv4, "0": relay them
 )
 
 const (
@@ -102,6 +103,8 @@ func tun_dial(name int, value *byte) bool {
 		bypassList = str
 	case typeDNSAddress:
 		dialDNS(str)
+	case typeBlockIPv6:
+		proxies.BlockIPv6 = str == "1"
 	case typeAdapterMTU:
 		n, err := strconv.Atoi(str)
 		if err != nil {
