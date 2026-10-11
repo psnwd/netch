@@ -2,7 +2,7 @@
 
 All notable changes to Netrix. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [2.0.0] - Unreleased
+## [2.0.0] - 2026-10-11
 
 Netrix is a fork of [Netch](https://github.com/NetchX/Netch) 1.9.7 by AmazingDM and contributors. Version 2.0.0 moves the project to .NET 10, rebuilds the bundled helper programs from source, and adds a new name, logo, documentation and tests.
 
