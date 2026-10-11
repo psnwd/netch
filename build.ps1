@@ -7,7 +7,7 @@ param (
 	[Parameter()]
 	[ValidateNotNullOrEmpty()]
 	[string]
-	$OutputPath = 'release',
+	$OutputPath = '.build',
 
 	[Parameter()]
 	[bool]
@@ -19,15 +19,25 @@ param (
 
 	[Parameter()]
 	[bool]
-	$PublishReadyToRun = $False
+	$PublishReadyToRun = $False,
+
+	# empty = whatever the .vcxproj says (v143, VS 2022); pass v145 on a machine that only has Visual Studio 2026
+	[Parameter()]
+	[string]
+	$PlatformToolset = ''
 )
 
 Push-Location (Split-Path $MyInvocation.MyCommand.Path -Parent)
 
+$toolsetArgs = @()
+if ( $PlatformToolset ) { $toolsetArgs = @("-property:PlatformToolset=$PlatformToolset") }
+
+# keep data\ (settings, when Netch runs from the output folder); everything else is replaced
 if ( Test-Path -Path $OutputPath ) {
-    rm -Recurse -Force $OutputPath
+    Get-ChildItem $OutputPath -Force -Exclude 'data' | Remove-Item -Recurse -Force
+} else {
+    New-Item -ItemType Directory -Name $OutputPath | Out-Null
 }
-New-Item -ItemType Directory -Name $OutputPath | Out-Null
 
 Push-Location $OutputPath
 New-Item -ItemType Directory -Name 'bin'  | Out-Null
@@ -79,6 +89,7 @@ if ( -Not ( Test-Path ".\Redirector\bin\$Configuration" ) ) {
 	msbuild `
 		-property:Configuration=$Configuration `
 		-property:Platform=x64 `
+		@toolsetArgs `
 		'.\Redirector\Redirector.vcxproj'
 	if ( -Not $? ) { exit $lastExitCode }
 }
@@ -92,6 +103,7 @@ if ( -Not ( Test-Path ".\RouteHelper\bin\$Configuration" ) ) {
 	msbuild `
 		-property:Configuration=$Configuration `
 		-property:Platform=x64 `
+		@toolsetArgs `
 		'.\RouteHelper\RouteHelper.vcxproj'
 	if ( -Not $? ) { exit $lastExitCode }
 }

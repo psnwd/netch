@@ -22,7 +22,8 @@ Netch 1.x: Windows proxy client (WinForms, .NET 10, x64 only). Needs admin at ru
 Windows only. Needs .NET 10 SDK, MSBuild + C++ toolchain (for Redirector/RouteHelper), Go etc. for `Other/`.
 
 ```powershell
-.\build.ps1                          # full release into .\release (builds Other, Netch, Redirector, RouteHelper)
+.\build.ps1                          # full build into .\.build (builds Other, Netch, Redirector, RouteHelper); keeps .build\data
+.\build.ps1 -PlatformToolset v145    # machine with only Visual Studio 2026 (the .vcxproj files say v143); needs msbuild on PATH, Go 1.17.1/1.18.10 via GO117/GO118, run under pwsh
 .\build.ps1 -Configuration Debug     # debug
 dotnet build Netch\Netch.csproj -c Debug -p:Platform=x64   # app only
 dotnet test Tests\Tests.csproj

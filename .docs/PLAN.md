@@ -27,8 +27,13 @@ See [ARCHITECTURE.md](ARCHITECTURE.md), [TASK.md](TASK.md), [QA.md](QA.md), [RIS
 5. **CI/CD** — bump actions, replace `actions-rs`, `upload-artifact@v4`, add `dotnet test` step, pin Go/Rust, fix cache keys. Exit: green PR build, release artifact layout identical.
 6. **Cleanup + release** — remove dead code, update README/CLAUDE.md, tag RC, full QA pass.
 
+7. **Performance and optimization** (after the release candidate) - measure first, then change one thing at a time; see the Performance section in [TASK.md](TASK.md). Goals: higher throughput and lower latency through TUN mode, faster start, smaller and lighter app. Rule: no optimization without a before/after number from the same test.
+
 ## Out of scope
-New protocols, UI redesign, WebMode, ARM64, Netch 2.0 rewrite.
+New protocols, UI redesign, ARM64 (blocked on x64-only prebuilt binaries), Netch 2.0 rewrite. WebMode and IPv6 in TUN mode were added during the update. A sing-box based core (TUN and process routing) is an open option, see TASK.md.
 
 ## Done when
 All [QA.md](QA.md) release gates pass and every [TASK.md](TASK.md) item is checked.
+
+## Status notes
+- 2026-10-11: a full local build ran end to end. TUN mode was started on Windows by the owner and carries traffic after two fixes found in testing: `aiodns` panicked on a failed upstream DNS lookup (killed the process), and IPv6 bypassed the tunnel (now routed into it, setting `TUNTAP.ProxyIPv6`). Process mode, Share mode and WebMode are still untested on real traffic.
