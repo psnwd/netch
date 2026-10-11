@@ -121,7 +121,8 @@ Next to `Netrix.exe`:
 Needs the .NET 10 SDK, MSBuild with the C++ toolchain, and Go and Rust for the bundled helper programs.
 
 ```powershell
-.\build.ps1                         # full build into .\.build (keeps .build\data)
+.\build.ps1                         # dev build into .\.build\dev (keeps its data\ folder)
+.\build.ps1 -Release                # release build into .\.build\release
 .\build.ps1 -PlatformToolset v145   # machine with only Visual Studio 2026
 dotnet test Tests\Tests.csproj -p:Platform=x64
 ```

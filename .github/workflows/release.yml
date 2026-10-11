@@ -102,13 +102,15 @@ jobs:
       - name: Build
         shell: pwsh
         run: |
-          .\build.ps1 -Configuration Release -OutputPath release
+          .\build.ps1 -Configuration Release -Release
 
       - name: Package
         shell: pwsh
         run: |
-          7z a -mx9 Netrix.7z release
-          7z rn Netrix.7z release Netrix
+          Push-Location .build
+          7z a -mx9 ..\Netrix.7z release
+          7z rn ..\Netrix.7z release Netrix
+          Pop-Location
 
       - name: Sign
         shell: pwsh

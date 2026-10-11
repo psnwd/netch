@@ -21,7 +21,8 @@ Netrix 2.0: Windows proxy client (WinForms, .NET 10, x64 only). Needs admin at r
 Windows only. Needs .NET 10 SDK, MSBuild + C++ toolchain (for Redirector/RouteHelper), Go etc. for `Other/`.
 
 ```powershell
-.\build.ps1                          # full build into .\.build (builds Other, Netrix, Redirector, RouteHelper); keeps .build\data
+.\build.ps1                          # dev build into .\.build\dev (builds Other, Netrix, Redirector, RouteHelper); keeps .build\dev\data
+.\build.ps1 -Release                 # release build into .\.build\release (what CI packages)
 .\build.ps1 -PlatformToolset v145    # machine with only Visual Studio 2026 (the .vcxproj files say v143); needs msbuild on PATH, Go 1.17.1/1.18.10 via GO117/GO118, run under pwsh
 .\build.ps1 -Configuration Debug     # debug
 dotnet build Netrix\Netrix.csproj -c Debug -p:Platform=x64   # app only

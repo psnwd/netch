@@ -4,10 +4,15 @@ param (
 	[string]
 	$Configuration = 'Release',
 
+	# default: .build\dev, or .build\release with -Release
 	[Parameter()]
-	[ValidateNotNullOrEmpty()]
 	[string]
-	$OutputPath = '.build',
+	$OutputPath = '',
+
+	# build into .build\release (what CI packages) instead of .build\dev
+	[Parameter()]
+	[switch]
+	$Release,
 
 	[Parameter()]
 	[bool]
@@ -29,6 +34,9 @@ param (
 
 Push-Location (Split-Path $MyInvocation.MyCommand.Path -Parent)
 
+$root = (Get-Location).Path
+if ( -Not $OutputPath ) { $OutputPath = if ( $Release ) { '.build\release' } else { '.build\dev' } }
+
 $toolsetArgs = @()
 if ( $PlatformToolset ) { $toolsetArgs = @("-property:PlatformToolset=$PlatformToolset") }
 
@@ -36,20 +44,20 @@ if ( $PlatformToolset ) { $toolsetArgs = @("-property:PlatformToolset=$PlatformT
 if ( Test-Path -Path $OutputPath ) {
     Get-ChildItem $OutputPath -Force -Exclude 'data' | Remove-Item -Recurse -Force
 } else {
-    New-Item -ItemType Directory -Name $OutputPath | Out-Null
+    New-Item -ItemType Directory -Force -Path $OutputPath | Out-Null
 }
 
 Push-Location $OutputPath
 New-Item -ItemType Directory -Name 'bin'  | Out-Null
-cp -Recurse -Force '..\Storage\i18n' '.'  | Out-Null
-cp -Recurse -Force '..\Storage\mode' '.'  | Out-Null
-cp -Recurse -Force '..\Storage\stun.txt' 'bin'  | Out-Null
-cp -Recurse -Force '..\Storage\nfdriver.sys' 'bin'  | Out-Null
-cp -Recurse -Force '..\Storage\aiodns.conf' 'bin'  | Out-Null
+cp -Recurse -Force "$root\Storage\i18n" '.'  | Out-Null
+cp -Recurse -Force "$root\Storage\mode" '.'  | Out-Null
+cp -Recurse -Force "$root\Storage\stun.txt" 'bin'  | Out-Null
+cp -Recurse -Force "$root\Storage\nfdriver.sys" 'bin'  | Out-Null
+cp -Recurse -Force "$root\Storage\aiodns.conf" 'bin'  | Out-Null
 Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country.mmdb' -ErrorAction Stop -OutFile 'bin\GeoLite2-Country.mmdb'
-#cp -Recurse -Force '..\Storage\GeoLite2-Country.mmdb' 'bin'  | Out-Null
-cp -Recurse -Force '..\Storage\tun2socks.bin' 'bin'  | Out-Null
-cp -Recurse -Force '..\Storage\README.md' 'bin'  | Out-Null
+#cp -Recurse -Force "$root\Storage\GeoLite2-Country.mmdb" 'bin'  | Out-Null
+cp -Recurse -Force "$root\Storage\tun2socks.bin" 'bin'  | Out-Null
+cp -Recurse -Force "$root\Storage\README.md" 'bin'  | Out-Null
 Pop-Location
 
 if ( -Not ( Test-Path '.\Other\release' ) ) {

@@ -12,7 +12,6 @@ function Delete {
 }
 
 Delete '.vs'
-Delete 'release'
 Delete 'Netrix\bin'
 Delete 'Netrix\obj'
 Delete 'Tests\bin'

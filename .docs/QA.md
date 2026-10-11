@@ -6,7 +6,7 @@ Verify no regression after each phase in [PLAN.md](PLAN.md). Windows 10 22H2 and
 - `dotnet build -c Release`: zero warnings
 - `dotnet test`: green
 - `dotnet list package --vulnerable --deprecated`: empty
-- Release artifact layout diff vs baseline: same files in `release\` and `release\bin\`
+- Release artifact layout diff vs baseline: same files in `.build\release\` and `.build\release\bin\`
 
 ## Manual matrix
 | Area | Cases |
