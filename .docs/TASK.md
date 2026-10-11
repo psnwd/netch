@@ -27,7 +27,7 @@ Phases map to [PLAN.md](PLAN.md). One task per commit/PR.
 - [x] MaxMind.GeoIP2, TaskScheduler, WindowsJobAPI, Stun.Net 10.0.10 (ProxyFactory.CreateProxy replaced by `new Socks5UdpProxy(...)`; NAT test needs manual QA with a real SOCKS5 server), HMBSbige.SingleInstance 7.0.0 (int command instead of string; handler marshals to UI thread via BeginInvoke; identifier is now plain `Netrix`, no `Global\` prefix so single-instance is per session; QA: second launch must focus the first window). WindowsFirewallHelper: already latest
 - [x] System.* 7.0 to match TFM (Management, ServiceController; CodePages removed, in-box)
 - [x] Microsoft.Diagnostics.Tracing.TraceEvent, VisualStudio.Threading
-- [ ] Dependabot: add grouping to cut PR noise
+- [x] Dependabot: weekly, grouped (actions, Microsoft, Serilog, other NuGet, Go)
 
 ## P4 Native + binaries
 - [x] Redirector/RouteHelper rebuild: builds in CI (run 38080196958, windows-2022).
@@ -150,7 +150,7 @@ Rule: measure first. Every item needs a before/after number from the same test, 
 5. [ ] **Release safety**: artifact checksum (P5); update signature (Update path, hash and file share one origin)
 6. [ ] **Tests for new code**: `Bandwidth.NetTraffic` (TUN counters), `NetworkInterfaceUtils.SetInterfaceMetric`, `TUNController.CheckDriver` size/time shortcut. Only where a unit test can run without admin; the rest stays manual QA
 7. [ ] **Owner decisions** (blockers, not work): framework-dependent vs self-contained vs compressed exe; sing-box prototype yes/no; drop `RedirectorTester` or port it
-8. [ ] Small: Dependabot grouping; IPv6 follow-ups (LAN bypass, router DNS, IPv6-only server)
+8. [ ] Small: IPv6 follow-ups (LAN bypass, router DNS, IPv6-only server)
 
 ### Bigger option (decide before investing in the items above)
 - [ ] sing-box as the core and TUN: it has its own TUN inbound, process-name routing and per-protocol speed work, and would replace tun2socks, wintun glue and the closed-source NetFilter driver. Loses ShadowsocksR, mKCP and legacy XTLS and needs a new config generator. Prototype for TUN mode only, compare with the harness numbers, then decide

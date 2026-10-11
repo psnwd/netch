@@ -1,7 +1,44 @@
 name: Netrix Build CI
-on: [push, pull_request]
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  workflow_call: # called by release.yml
+
+permissions:
+  contents: read
+
+# a newer push to the same branch makes the older run pointless; never cancel a tag (release) build
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
 
 jobs:
+  # the tests only need the .NET SDK: run them next to the slow native build instead of after it
+  test:
+    name: Test
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'common.props', 'global.json') }}
+          restore-keys: nuget-${{ runner.os }}-
+          path: ~\.nuget\packages
+
+      - name: Test
+        run: dotnet test .\Tests\Tests.csproj -p:Platform=x64
+
   build:
     name: Build
     runs-on: windows-2022
@@ -9,83 +46,75 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Checksum
-        shell: pwsh
-        run: |
-          echo "SOURCE_NETRIX_SHA256=$(.\sha256.ps1 .\Netrix)" | Out-File -Append -Encoding UTF8 -FilePath $Env:GITHUB_ENV
-          echo "SOURCE_OTHER_SHA256=$(.\sha256.ps1 .\Other)" | Out-File -Append -Encoding UTF8 -FilePath $Env:GITHUB_ENV
-          echo "SOURCE_REDIRECTOR_SHA256=$(.\sha256.ps1 .\Redirector)" | Out-File -Append -Encoding UTF8 -FilePath $Env:GITHUB_ENV
-          echo "SOURCE_ROUTEHELPER_SHA256=$(.\sha256.ps1 .\RouteHelper)" | Out-File -Append -Encoding UTF8 -FilePath $Env:GITHUB_ENV
-
+      # each cache is keyed by the sources (and build script) that produce it, build output folders excluded
       - name: Cache Netrix
         uses: actions/cache@v4
         with:
-          key: Netrix-${{ runner.os }}-Netrix-${{ env.SOURCE_NETRIX_SHA256 }}
-          path: |
-            .\Netrix\bin
+          key: netrix-${{ runner.os }}-app-${{ hashFiles('Netrix/**', '!Netrix/bin/**', '!Netrix/obj/**', 'common.props', 'global.json', 'build.ps1') }}
+          path: Netrix\bin
 
-      - name: Cache Other
+      - name: Cache Other (tun2socks, aiodns, pcap2socks, v2ray-sn, wintun)
+        id: cache_other
         uses: actions/cache@v4
         with:
-          key: Netrix-${{ runner.os }}-Other-${{ env.SOURCE_OTHER_SHA256 }}
-          path: |
-            .\Other\release
+          key: netrix-${{ runner.os }}-other-${{ hashFiles('Other/**', '!Other/release/**', '!Other/pcap2socks/crate/target/**') }}
+          path: Other\release
 
       - name: Cache Redirector
         uses: actions/cache@v4
         with:
-          key: Netrix-${{ runner.os }}-Redirector-${{ env.SOURCE_REDIRECTOR_SHA256 }}
-          path: |
-            .\Redirector\bin
+          key: netrix-${{ runner.os }}-redirector-${{ hashFiles('Redirector/**', '!Redirector/bin/**', '!Redirector/obj/**') }}
+          path: Redirector\bin
 
       - name: Cache RouteHelper
         uses: actions/cache@v4
         with:
-          key: Netrix-${{ runner.os }}-RouteHelper-${{ env.SOURCE_ROUTEHELPER_SHA256 }}
-          path: |
-            .\RouteHelper\bin
+          key: netrix-${{ runner.os }}-routehelper-${{ hashFiles('RouteHelper/**', '!RouteHelper/bin/**', '!RouteHelper/obj/**') }}
+          path: RouteHelper\bin
 
-      - name: Check Other
-        id: check_other
-        uses: andstor/file-existence-action@v2
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
         with:
-          files: .\other\release\aiodns.bin
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'common.props', 'global.json') }}
+          restore-keys: nuget-${{ runner.os }}-
+          path: ~\.nuget\packages
 
+      # the toolchains below are only needed when Other\release was not restored from the cache
       - name: Setup Go 1.17.1 (tun2socks)
         uses: actions/setup-go@v5
-        if: steps.check_other.outputs.files_exists == 'false'
+        if: steps.cache_other.outputs.cache-hit != 'true'
         with:
           go-version: '1.17.1'
           cache: false
 
       - name: Export Go 1.17.1 root
         shell: pwsh
-        if: steps.check_other.outputs.files_exists == 'false'
+        if: steps.cache_other.outputs.cache-hit != 'true'
         run: |
           echo "GO117=$(go env GOROOT)" | Out-File -Append -Encoding UTF8 -FilePath $Env:GITHUB_ENV
 
       - name: Setup Go 1.18 (v2ray-sn)
         uses: actions/setup-go@v5
-        if: steps.check_other.outputs.files_exists == 'false'
+        if: steps.cache_other.outputs.cache-hit != 'true'
         with:
           go-version: '1.18.10'
           cache: false
 
       - name: Export Go 1.18 root
         shell: pwsh
-        if: steps.check_other.outputs.files_exists == 'false'
+        if: steps.cache_other.outputs.cache-hit != 'true'
         run: |
           echo "GO118=$(go env GOROOT)" | Out-File -Append -Encoding UTF8 -FilePath $Env:GITHUB_ENV
 
       - name: Setup Go
         uses: actions/setup-go@v5
-        if: steps.check_other.outputs.files_exists == 'false'
+        if: steps.cache_other.outputs.cache-hit != 'true'
         with:
           go-version: stable
 
       - name: Setup C++
         uses: msys2/setup-msys2@v2
-        if: steps.check_other.outputs.files_exists == 'false'
+        if: steps.cache_other.outputs.cache-hit != 'true'
         with:
           update: true
           release: true
@@ -93,7 +122,7 @@ jobs:
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
-        if: steps.check_other.outputs.files_exists == 'false'
+        if: steps.cache_other.outputs.cache-hit != 'true'
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -123,13 +152,9 @@ jobs:
             exit 1
           }
 
-      - name: Test
-        shell: pwsh
-        run: |
-          dotnet test .\Tests\Tests.csproj -p:Platform=x64
-
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: release
           path: .build\release
+          retention-days: 7

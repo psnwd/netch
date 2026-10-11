@@ -32,7 +32,7 @@ Netrix is a fork of [Netch](https://github.com/NetchX/Netch) 1.9.7 by AmazingDM 
 - Default STUN server is `stun.1und1.de`; the server list only has servers that support the NAT test (`stun.1und1.de`, `stun.miwifi.com`, `stun.fitauto.ru`).
 - Font is Segoe UI.
 - Start-up: the slow logging work runs after the window is shown; the delay test pauses while the window is minimized or in the tray; the `wintun.dll` check skips hashing when size and time match.
-- CI: GitHub Actions updated, tests run on every build.
+- CI: GitHub Actions updated; tests run in their own job next to the build; caches keyed with `hashFiles`; `release.yml` reuses `build.yml` and takes its release notes from this file; Dependabot is weekly and grouped.
 - The update checker and links point to `github.com/psnwd/netrix`.
 - All Chinese comments and developer messages translated to English. The Chinese interface translation (`zh-CN`) is unchanged.
 - README rewritten.

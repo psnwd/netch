@@ -1,26 +1,35 @@
 version: 2
 updates:
+  # weekly and grouped: one pull request per ecosystem instead of one per package per day
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "daily"
-      time: "00:00"
-      timezone: "Asia/Shanghai"
+      interval: "weekly"
+    groups:
+      actions:
+        patterns: ["*"]
 
   - package-ecosystem: "nuget"
     directory: "/"
     schedule:
-      interval: "daily"
-      time: "00:00"
-      timezone: "Asia/Shanghai"
+      interval: "weekly"
     labels:
       - "automatic"
+    groups:
+      microsoft:
+        patterns: ["Microsoft.*", "System.*"]
+      serilog:
+        patterns: ["Serilog*"]
+      other:
+        patterns: ["*"]
+        exclude-patterns: ["Microsoft.*", "System.*", "Serilog*"]
 
   - package-ecosystem: "gomod"
     directory: "/Other/aiodns"
     schedule:
-      interval: "daily"
-      time: "00:00"
-      timezone: "Asia/Shanghai"
+      interval: "weekly"
     labels:
       - "automatic"
+    groups:
+      go:
+        patterns: ["*"]

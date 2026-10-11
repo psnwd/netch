@@ -30,7 +30,7 @@ dotnet test Tests\Tests.csproj
 .\clean.ps1
 ```
 
-`build.ps1` skips a component if its output dir (`Netrix\bin\<cfg>`, `Redirector\bin\<cfg>`, `RouteHelper\bin\<cfg>`, `Other\release`) already exists — run `.\clean.ps1` to force rebuild. It downloads `GeoLite2-Country.mmdb` at build time. CI: `.github/workflows/build.yml` (cache keyed by `sha256.ps1` of each source dir).
+`build.ps1` skips a component if its output dir (`Netrix\bin\<cfg>`, `Redirector\bin\<cfg>`, `RouteHelper\bin\<cfg>`, `Other\release`) already exists — run `.\clean.ps1` to force rebuild. It downloads `GeoLite2-Country.mmdb` at build time. CI: `.github/workflows/build.yml` (caches keyed by `hashFiles` of each source dir; `release.yml` reuses it).
 
 ## Conventions
 
