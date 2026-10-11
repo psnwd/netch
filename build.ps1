@@ -4,10 +4,15 @@ param (
 	[string]
 	$Configuration = 'Release',
 
+	# default: .build\dev, or .build\release with -Release
 	[Parameter()]
-	[ValidateNotNullOrEmpty()]
 	[string]
-	$OutputPath = 'release',
+	$OutputPath = '',
+
+	# build into .build\release (what CI packages) instead of .build\dev
+	[Parameter()]
+	[switch]
+	$Release,
 
 	[Parameter()]
 	[bool]
@@ -19,27 +24,40 @@ param (
 
 	[Parameter()]
 	[bool]
-	$PublishReadyToRun = $False
+	$PublishReadyToRun = $False,
+
+	# empty = whatever the .vcxproj says (v143, VS 2022); pass v145 on a machine that only has Visual Studio 2026
+	[Parameter()]
+	[string]
+	$PlatformToolset = ''
 )
 
 Push-Location (Split-Path $MyInvocation.MyCommand.Path -Parent)
 
+$root = (Get-Location).Path
+if ( -Not $OutputPath ) { $OutputPath = if ( $Release ) { '.build\release' } else { '.build\dev' } }
+
+$toolsetArgs = @()
+if ( $PlatformToolset ) { $toolsetArgs = @("-property:PlatformToolset=$PlatformToolset") }
+
+# keep data\ (settings, when Netrix runs from the output folder); everything else is replaced
 if ( Test-Path -Path $OutputPath ) {
-    rm -Recurse -Force $OutputPath
+    Get-ChildItem $OutputPath -Force -Exclude 'data' | Remove-Item -Recurse -Force
+} else {
+    New-Item -ItemType Directory -Force -Path $OutputPath | Out-Null
 }
-New-Item -ItemType Directory -Name $OutputPath | Out-Null
 
 Push-Location $OutputPath
 New-Item -ItemType Directory -Name 'bin'  | Out-Null
-cp -Recurse -Force '..\Storage\i18n' '.'  | Out-Null
-cp -Recurse -Force '..\Storage\mode' '.'  | Out-Null
-cp -Recurse -Force '..\Storage\stun.txt' 'bin'  | Out-Null
-cp -Recurse -Force '..\Storage\nfdriver.sys' 'bin'  | Out-Null
-cp -Recurse -Force '..\Storage\aiodns.conf' 'bin'  | Out-Null
-Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country.mmdb' -OutFile 'bin\GeoLite2-Country.mmdb'
-#cp -Recurse -Force '..\Storage\GeoLite2-Country.mmdb' 'bin'  | Out-Null
-cp -Recurse -Force '..\Storage\tun2socks.bin' 'bin'  | Out-Null
-cp -Recurse -Force '..\Storage\README.md' 'bin'  | Out-Null
+cp -Recurse -Force "$root\Storage\i18n" '.'  | Out-Null
+cp -Recurse -Force "$root\Storage\mode" '.'  | Out-Null
+cp -Recurse -Force "$root\Storage\stun.txt" 'bin'  | Out-Null
+cp -Recurse -Force "$root\Storage\nfdriver.sys" 'bin'  | Out-Null
+cp -Recurse -Force "$root\Storage\aiodns.conf" 'bin'  | Out-Null
+Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country.mmdb' -ErrorAction Stop -OutFile 'bin\GeoLite2-Country.mmdb'
+#cp -Recurse -Force "$root\Storage\GeoLite2-Country.mmdb" 'bin'  | Out-Null
+cp -Recurse -Force "$root\Storage\tun2socks.bin" 'bin'  | Out-Null
+cp -Recurse -Force "$root\Storage\README.md" 'bin'  | Out-Null
 Pop-Location
 
 if ( -Not ( Test-Path '.\Other\release' ) ) {
@@ -52,9 +70,9 @@ cp -Force '.\Other\release\*.bin' "$OutputPath\bin"
 cp -Force '.\Other\release\*.dll' "$OutputPath\bin"
 cp -Force '.\Other\release\*.exe' "$OutputPath\bin"
 
-if ( -Not ( Test-Path ".\Netch\bin\$Configuration" ) ) {
+if ( -Not ( Test-Path ".\Netrix\bin\$Configuration" ) ) {
 	Write-Host
-	Write-Host 'Building Netch'
+	Write-Host 'Building Netrix'
 
 	dotnet publish `
 		-c $Configuration `
@@ -66,11 +84,11 @@ if ( -Not ( Test-Path ".\Netch\bin\$Configuration" ) ) {
 		-p:PublishReadyToRun=$PublishReadyToRun `
 		-p:PublishReadyToRunShowWarnings=$PublishReadyToRun `
 		-p:IncludeNativeLibrariesForSelfExtract=$SelfContained `
-		-o ".\Netch\bin\$Configuration" `
-		'.\Netch\Netch.csproj'
+		-o ".\Netrix\bin\$Configuration" `
+		'.\Netrix\Netrix.csproj'
 	if ( -Not $? ) { exit $lastExitCode }
 }
-cp -Force ".\Netch\bin\$Configuration\Netch.exe" $OutputPath
+cp -Force ".\Netrix\bin\$Configuration\Netrix.exe" $OutputPath
 
 if ( -Not ( Test-Path ".\Redirector\bin\$Configuration" ) ) {
 	Write-Host
@@ -79,6 +97,7 @@ if ( -Not ( Test-Path ".\Redirector\bin\$Configuration" ) ) {
 	msbuild `
 		-property:Configuration=$Configuration `
 		-property:Platform=x64 `
+		@toolsetArgs `
 		'.\Redirector\Redirector.vcxproj'
 	if ( -Not $? ) { exit $lastExitCode }
 }
@@ -92,6 +111,7 @@ if ( -Not ( Test-Path ".\RouteHelper\bin\$Configuration" ) ) {
 	msbuild `
 		-property:Configuration=$Configuration `
 		-property:Platform=x64 `
+		@toolsetArgs `
 		'.\RouteHelper\RouteHelper.vcxproj'
 	if ( -Not $? ) { exit $lastExitCode }
 }

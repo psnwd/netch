@@ -148,7 +148,7 @@ func handleServerName(w dns.ResponseWriter, m *dns.Msg) {
 	r.SetReply(m)
 
 	for i := 0; i < len(m.Question); i++ {
-		rr, err := dns.NewRR(fmt.Sprintf("%s PTR Netch", m.Question[i].Name))
+		rr, err := dns.NewRR(fmt.Sprintf("%s PTR Netrix", m.Question[i].Name))
 		if err != nil {
 			fmt.Printf("[aiodns][dns.NewRR] %v\n", err)
 			return
@@ -161,18 +161,26 @@ func handleServerName(w dns.ResponseWriter, m *dns.Msg) {
 }
 
 func handleChinaDNS(w dns.ResponseWriter, m *dns.Msg) {
-	r, _, err := CDNS.Exchange(m, ChinaDNS)
+	r, err := exchange(&CDNS, m, ChinaDNS)
 	if err != nil {
 		fmt.Printf("[aiodns] handleChinaDNS: %v\n", err)
+
+		// Exchange returns no message on failure; writing nil would panic and take the whole process down
+		r = new(dns.Msg)
+		r.SetRcode(m, dns.RcodeServerFailure)
 	}
 
 	_ = w.WriteMsg(r)
 }
 
 func handleOtherDNS(w dns.ResponseWriter, m *dns.Msg) {
-	r, _, err := ODNS.Exchange(m, OtherDNS)
+	r, err := exchange(&ODNS, m, OtherDNS)
 	if err != nil {
 		fmt.Printf("[aiodns] handleOtherDNS: %v\n", err)
+
+		// Exchange returns no message on failure; writing nil would panic and take the whole process down
+		r = new(dns.Msg)
+		r.SetRcode(m, dns.RcodeServerFailure)
 	}
 
 	_ = w.WriteMsg(r)

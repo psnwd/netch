@@ -1,0 +1,114 @@
+﻿using System.Net;
+using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using Netrix.Models.GitHubRelease;
+using Netrix.Utils;
+
+namespace Netrix.Controllers;
+
+public static class UpdateChecker
+{
+    public const string Owner = @"psnwd";
+    public const string Repo = @"Netrix";
+
+    public const string Name = @"Netrix";
+    public const string Copyright = @"Copyright © 2019 AmazingDM and Contributors; Netrix changes © 2026 psnwd";
+
+    public const string AssemblyVersion = @"2.0.0";
+    private const string Suffix = @"";
+
+    public static readonly string Version = $"{AssemblyVersion}{(string.IsNullOrEmpty(Suffix) ? "" : $"-{Suffix}")}";
+
+    public static Release LatestRelease = null!;
+
+    public static string LatestVersionNumber => LatestRelease.tag_name;
+
+    public static string LatestVersionUrl => LatestRelease.html_url;
+
+    public static event EventHandler? NewVersionFound;
+
+    public static event EventHandler? NewVersionFoundFailed;
+
+    public static event EventHandler? NewVersionNotFound;
+
+    public static async Task CheckAsync(bool isPreRelease)
+    {
+        try
+        {
+            var updater = new GitHubRelease(Owner, Repo);
+            var url = updater.AllReleaseUrl;
+
+            var (_, json) = await WebUtil.DownloadStringAsync(WebUtil.CreateRequest(url));
+
+            var releases = JsonSerializer.Deserialize<List<Release>>(json)!;
+            var latest = GetLatestRelease(releases, isPreRelease);
+            if (latest == null)
+            {
+                Log.Information("No release published yet");
+                NewVersionNotFound?.Invoke(null, EventArgs.Empty);
+                return;
+            }
+
+            LatestRelease = latest;
+            Log.Information("Github latest release: {Version}", LatestRelease.tag_name);
+            if (VersionUtil.CompareVersion(LatestRelease.tag_name, Version) > 0)
+            {
+                Log.Information("Found newer version");
+                NewVersionFound?.Invoke(null, EventArgs.Empty);
+            }
+            else
+            {
+                Log.Information("Already the latest version");
+                NewVersionNotFound?.Invoke(null, EventArgs.Empty);
+            }
+        }
+        catch (Exception e)
+        {
+            if (e is HttpRequestException or TaskCanceledException)
+                Log.Warning(e, "Get releases failed");
+            else
+                Log.Error(e, "Get releases error");
+
+            NewVersionFoundFailed?.Invoke(null, EventArgs.Empty);
+        }
+    }
+
+    public static (string fileName, string sha256) GetLatestUpdateFileNameAndHash(string? keyword = null)
+    {
+        var matches = Regex.Matches(LatestRelease.body, @"^\| (?<filename>.*) \| (?<sha256>.*) \|\r?$", RegexOptions.Multiline).Skip(2);
+        /*
+          Skip(2)
+          
+          | File | SHA256 |
+          | :- | :- |
+       */
+
+        Match match = keyword == null ? matches.First() : matches.First(m => m.Groups["filename"].Value.Contains(keyword));
+
+        return (match.Groups["filename"].Value, match.Groups["sha256"].Value);
+    }
+
+    public static string GetLatestReleaseContent()
+    {
+        var sb = new StringBuilder();
+        foreach (string l in LatestRelease.body.GetLines(false).SkipWhile(l => l.FirstOrDefault() != '#'))
+        {
+            if (l.Contains("Checksums"))
+                break;
+
+            sb.AppendLine(l);
+        }
+
+        return sb.ToString();
+    }
+
+    internal static Release? GetLatestRelease(IEnumerable<Release> releases, bool isPreRelease)
+    {
+        if (!isPreRelease)
+            releases = releases.Where(release => !release.prerelease);
+
+        var ordered = releases.OrderByDescending(release => release.tag_name, new VersionUtil.VersionComparer());
+        return ordered.FirstOrDefault();
+    }
+}

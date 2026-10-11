@@ -12,22 +12,18 @@ function Delete {
 }
 
 Delete '.vs'
-Delete 'release'
-Delete 'Netch\bin'
-Delete 'Netch\obj'
+Delete 'Netrix\bin'
+Delete 'Netrix\obj'
 Delete 'Tests\bin'
 Delete 'Tests\obj'
 Delete 'TestResults'
 Delete 'Redirector\bin'
 Delete 'Redirector\obj'
-Delete 'RedirectorTester\bin'
-Delete 'RedirectorTester\obj'
 Delete 'RouteHelper\bin'
 Delete 'RouteHelper\obj'
 
-Delete 'Netch\*.csproj.user'
+Delete 'Netrix\*.csproj.user'
 Delete 'Redirector\*.vcxproj.user'
-Delete 'RedirectorTester\*.csproj.user'
 Delete 'RouteHelper\*.vcxproj.user'
 
 .\other\clean.ps1
